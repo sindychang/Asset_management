@@ -124,8 +124,7 @@ tr:hover td{background:rgba(255,255,255,.025)}
   <div class="hdr-right">
     <span class="hdr-date" id="hdrDate"></span>
     <button class="btn btn-ghost btn-sm" onclick="exportData()" title="匯出所有資料為 JSON 檔">📤 匯出</button>
-    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()" title="從 JSON 檔匯入資料">📥 匯入</button>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
+    <label class="btn btn-ghost btn-sm" style="cursor:pointer" title="從 JSON 檔匯入資料">📥 匯入<input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)"></label>
     <button class="btn btn-ghost btn-sm" onclick="openMonthModal()">＋ 新增 / 更新月份</button>
   </div>
 </div>
@@ -163,110 +162,15 @@ tr:hover td{background:rgba(255,255,255,.025)}
 // ═══════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════
+// GitHub Pages 版本：SEED 為空，資料請透過「📥 匯入」載入
 const SEED={
-  overview:[
-    {month:'2025-06',netAssets:615982,income:49612,etfValue:450163,bankBalance:169391,totalAssets:669166,creditCard:53184,totalExpenses:79264},
-    {month:'2025-07',netAssets:602692,income:53382,etfValue:478015,bankBalance:124231,totalAssets:655628,creditCard:52936,totalExpenses:74482},
-    {month:'2025-08',netAssets:693103,income:55720,etfValue:470253,bankBalance:259084,totalAssets:729337,creditCard:36234,totalExpenses:75507},
-    {month:'2025-09',netAssets:731984,income:59670,etfValue:521670,bankBalance:246615,totalAssets:768285,creditCard:36301,totalExpenses:76480},
-    {month:'2025-10',netAssets:791111,income:57498,etfValue:568649,bankBalance:249750,totalAssets:818399,creditCard:27288,totalExpenses:55929},
-    {month:'2025-11',netAssets:761987,income:59555,etfValue:569236,bankBalance:249461,totalAssets:818697,creditCard:56710,totalExpenses:76518},
-    {month:'2025-12',netAssets:750823,income:55443,etfValue:610943,bankBalance:176161,totalAssets:787104,creditCard:36281,totalExpenses:58252},
-    {month:'2026-01',netAssets:842867,income:59555,etfValue:701205,bankBalance:168669,totalAssets:869874,creditCard:27007,totalExpenses:49194},
-    {month:'2026-02',netAssets:1036878,income:59298,etfValue:811110,bankBalance:198543,totalAssets:1068951,creditCard:32073,totalExpenses:60094},
-    {month:'2026-03',netAssets:956340,income:59555,etfValue:774250,bankBalance:153157,totalAssets:986962,creditCard:30622,totalExpenses:52912},
-  ],
-  income:[
-    {month:'2025-06',workIncome:49612,otherIncome:0,otherNote:'',savings:10000,savingsRate:0.2016,cumSavings:110000,changBank:0,esuBank:20726,yongBank:148665},
-    {month:'2025-07',workIncome:53382,otherIncome:15327,otherNote:'獎金',savings:10000,savingsRate:0.1873,cumSavings:135300,changBank:0,esuBank:1667,yongBank:122564},
-    {month:'2025-08',workIncome:55720,otherIncome:45718,otherNote:'獎金',savings:13000,savingsRate:0.2333,cumSavings:208300,changBank:42720,esuBank:28352,yongBank:188012},
-    {month:'2025-09',workIncome:59670,otherIncome:0,otherNote:'',savings:13000,savingsRate:0.2179,cumSavings:221300,changBank:45041,esuBank:1296,yongBank:200278},
-    {month:'2025-10',workIncome:57498,otherIncome:0,otherNote:'',savings:0,savingsRate:0,cumSavings:221300,changBank:41211,esuBank:1296,yongBank:207243},
-    {month:'2025-11',workIncome:59555,otherIncome:0,otherNote:'',savings:0,savingsRate:0,cumSavings:221300,changBank:57912,esuBank:1296,yongBank:190253},
-    {month:'2025-12',workIncome:55443,otherIncome:0,otherNote:'',savings:15000,savingsRate:0.2705,cumSavings:236300,changBank:36990,esuBank:88,yongBank:176161},
-    {month:'2026-01',workIncome:59555,otherIncome:0,otherNote:'',savings:13000,savingsRate:0.2183,cumSavings:249300,changBank:45431,esuBank:88,yongBank:168669},
-    {month:'2026-02',workIncome:59298,otherIncome:48790,otherNote:'獎金',savings:13000,savingsRate:0.2192,cumSavings:282300,changBank:54430,esuBank:0,yongBank:198543},
-    {month:'2026-03',workIncome:59555,otherIncome:0,otherNote:'',savings:12000,savingsRate:0.2015,cumSavings:294300,changBank:59304,esuBank:88,yongBank:153157},
-  ],
-  expenses:[
-    {month:'2025-06',total:79264,creditCard:53184,cash:8020,filialPiety:3500,rent:9940,beauty:1620,insurance:3000,note:'旅遊：日本差旅+香港機票&飯店'},
-    {month:'2025-07',total:74482,creditCard:52936,cash:3000,filialPiety:3500,rent:9847,beauty:2199,insurance:3000,note:'旅遊：日本差旅'},
-    {month:'2025-08',total:75507,creditCard:36234,cash:21420,filialPiety:3500,rent:9889,beauty:0,insurance:4464,note:'北投住宿、代墊同事聚餐、小黑瓶'},
-    {month:'2025-09',total:76480,creditCard:33301,cash:23500,filialPiety:5000,rent:10180,beauty:1499,insurance:3000,note:'高鐵費(中秋/國慶)'},
-    {month:'2025-10',total:55929,creditCard:23865,cash:13500,filialPiety:5000,rent:10141,beauty:0,insurance:3423,note:'旅遊：高雄高鐵、換日幣'},
-    {month:'2025-11',total:76518,creditCard:53287,cash:5000,filialPiety:5000,rent:9808,beauty:0,insurance:3423,note:'旅遊：高雄住宿、日本機票&飯店'},
-    {month:'2025-12',total:58252,creditCard:32858,cash:5000,filialPiety:5000,rent:9940,beauty:2031,insurance:3423,note:'旅遊：日本、台南住宿'},
-    {month:'2026-01',total:49194,creditCard:23584,cash:7400,filialPiety:5000,rent:9787,beauty:0,insurance:3423,note:''},
-    {month:'2026-02',total:60094,creditCard:28650,cash:13000,filialPiety:5000,rent:10021,beauty:0,insurance:3423,note:'旅遊：香港消費'},
-    {month:'2026-03',total:52912,creditCard:27199,cash:7350,filialPiety:5000,rent:9940,beauty:0,insurance:3423,note:'購物：禮物+BP周邊'},
-  ],
-  etf:[
-    {month:'2025-06',invested:348452,market:450163,pnl:101711,pnlRate:0.2919},
-    {month:'2025-07',invested:359671,market:478015,pnl:118344,pnlRate:0.3290},
-    {month:'2025-08',invested:346928,market:470253,pnl:123325,pnlRate:0.3555},
-    {month:'2025-09',invested:350745,market:521299,pnl:170554,pnlRate:0.4863},
-    {month:'2025-10',invested:349317,market:566848,pnl:217531,pnlRate:0.6227},
-    {month:'2025-11',invested:357365,market:561797,pnl:204432,pnlRate:0.5721},
-    {month:'2025-12',invested:365807,market:610450,pnl:244643,pnlRate:0.6688},
-    {month:'2026-01',invested:400689,market:698934,pnl:298245,pnlRate:0.7443},
-    {month:'2026-02',invested:431356,market:811110,pnl:402611,pnlRate:0.9334},
-    {month:'2026-03',invested:489051,market:774250,pnl:308146,pnlRate:0.6301},
-  ],
-  holdings:[
-    {code:'0050',name:'元大台灣50',shares:5252,avgCost:39.48,totalCost:207367,market:379982,pnl:179394,rate:0.8651},
-    {code:'00878',name:'國泰永續高股息',shares:1047,avgCost:21.95,totalCost:22978,market:22835,pnl:3191,rate:0.1389},
-    {code:'1101',name:'台泥',shares:85,avgCost:34.25,totalCost:2911,market:1955,pnl:-786,rate:-0.2700},
-    {code:'2330',name:'台積電',shares:25,avgCost:1910,totalCost:47750,market:44000,pnl:-3660,rate:-0.0766},
-    {code:'2890',name:'永豐金',shares:7383,avgCost:19.85,totalCost:146533,market:226658,pnl:91500,rate:0.6244},
-    {code:'3711',name:'日月光投控',shares:220,avgCost:136.42,totalCost:30012,market:72270,pnl:43457,rate:1.4480},
-    {code:'6770',name:'力積電',shares:500,avgCost:63.00,totalCost:31500,market:26550,pnl:-4950,rate:-0.1571},
-  ],
-  transactions:[
-    {month:'2026-03',date:'2026-03-24',type:'買進',name:'台積電',shares:10,price:1820,amount:18200,fee:25},
-    {month:'2026-03',date:'2026-03-09',type:'買進',name:'永豐金',shares:128,price:31.06,amount:3976,fee:1},
-    {month:'2026-03',date:'2026-03-09',type:'買進',name:'台灣50',shares:82,price:72.79,amount:5969,fee:1},
-    {month:'2026-03',date:'2026-03-03',type:'買進',name:'台積電',shares:5,price:1940,amount:9700,fee:13},
-    {month:'2026-03',date:'2026-03-02',type:'買進',name:'台積電',shares:10,price:1985,amount:19850,fee:28},
-    {month:'2026-02',date:'2026-02-23',type:'買進',name:'永豐金',shares:122,price:32.59,amount:3976,fee:1},
-    {month:'2026-02',date:'2026-02-09',type:'買進',name:'台灣50',shares:60,price:74.02,amount:4441,fee:1},
-    {month:'2026-01',date:'2026-01-21',type:'買進',name:'力積電',shares:500,price:63.00,amount:31500,fee:44},
-    {month:'2026-01',date:'2026-01-16',type:'買進',name:'永豐金',shares:136,price:29.27,amount:3981,fee:1},
-    {month:'2026-01',date:'2026-01-09',type:'買進',name:'台灣50',shares:84,price:69.77,amount:4465,fee:1},
-    {month:'2025-12',date:'2025-12-16',type:'買進',name:'永豐金',shares:142,price:28.06,amount:3985,fee:1},
-    {month:'2025-12',date:'2025-12-09',type:'買進',name:'台灣50',shares:70,price:63.64,amount:4455,fee:1},
-    {month:'2025-11',date:'2025-11-17',type:'買進',name:'永豐金',shares:150,price:26.65,amount:3998,fee:1},
-    {month:'2025-11',date:'2025-11-10',type:'買進',name:'台灣50',shares:71,price:62.92,amount:4467,fee:1},
-    {month:'2025-10',date:'2025-10-29',type:'賣出',name:'日月光投控',shares:110,price:211.5,amount:23265,fee:33},
-    {month:'2025-10',date:'2025-10-16',type:'買進',name:'永豐金',shares:153,price:26.10,amount:3994,fee:1},
-    {month:'2025-10',date:'2025-10-09',type:'買進',name:'台灣50',shares:72,price:61.83,amount:4452,fee:1},
-    {month:'2025-09',date:'2025-09-16',type:'買進',name:'永豐金',shares:160,price:24.98,amount:3996,fee:1},
-    {month:'2025-09',date:'2025-09-09',type:'買進',name:'台灣50',shares:83,price:53.81,amount:4466,fee:1},
-    {month:'2025-09',date:'2025-09-01',type:'賣出',name:'永豐中國',shares:425,price:11.26,amount:4785,fee:6},
-  ],
-  goals:[
-    {id:1,target:750000,deadline:'2025-12',achieved:true,achievedMonth:'2025-10'},
-    {id:2,target:850000,deadline:'2025-12',achieved:true,achievedMonth:'2026-02'},
-    {id:3,target:950000,deadline:'2026-03',achieved:true,achievedMonth:'2026-02'},
-    {id:4,target:1000000,deadline:'2026-05',achieved:true,achievedMonth:'2026-02'},
-    {id:5,target:1100000,deadline:'2026-12',achieved:false,achievedMonth:''},
-  ],
-  personalGoals:[
-    {id:1,targetDate:'2028年3月',goal:'去歐洲 ✈️',color:'#5690f5',note:'',actualDate:''},
-    {id:2,targetDate:'2031年底',goal:'買房 🏠',color:'#38be7a',note:'',actualDate:''},
-  ],
-  dividends:[],
-  dividendSchedule:[
-    {code:'0050',name:'元大台灣50',payMonths:[2,8],note:'每年2月、8月'},
-    {code:'00878',name:'國泰永續高股息',payMonths:[2,6,9,12],note:'每季（2/6/9/12月）'},
-    {code:'2890',name:'永豐金',payMonths:[9],note:'9月下旬'},
-    {code:'3711',name:'日月光投控',payMonths:[7],note:'7月下旬'},
-    {code:'6770',name:'力積電',payMonths:[],note:'不定期'},
-    {code:'1101',name:'台泥',payMonths:[],note:'不定期'},
-    {code:'2330',name:'台積電',payMonths:[],note:'不定期'},
-  ],
+  overview:[],income:[],expenses:[],etf:[],
+  holdings:[],transactions:[],goals:[],
+  personalGoals:[],dividends:[],dividendSchedule:[]
 };
 
-let localD = JSON.parse(localStorage.getItem('assetMgmt_v3') || 'null');
+let localD = null;
+try { localD = JSON.parse(localStorage.getItem('assetMgmt_v3') || 'null'); } catch(e) {}
 let D = localD || JSON.parse(JSON.stringify(SEED));
 
 // 【修復 Bug 1】版本更新防呆：確保 localStorage 裡的舊資料，會自動補齊 SEED 中新增的陣列結構
@@ -286,7 +190,7 @@ const money=n=>n==null?'—':'$'+nt(n);
 const fmtM=m=>m?m.replace('-','年')+'月':'—';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const uid=()=>Date.now()+Math.floor(Math.random()*1000);
-const save=()=>localStorage.setItem('assetMgmt_v3',JSON.stringify(D));
+const save=()=>{try{localStorage.setItem('assetMgmt_v3',JSON.stringify(D));}catch(e){console.warn('⚠️ 無法寫入 localStorage',e);}};
 const COLORS=['#5690f5','#38be7a','#f0a830','#9880e8','#e05a5a','#2acce0'];
 
 let _charts={};
@@ -301,7 +205,26 @@ const PAL=['#5690f5','#2acce0','#38be7a','#f0a830','#9880e8','#e05a5a','#f07840'
 // ═══════════════════════════════════════════
 // OVERVIEW
 // ═══════════════════════════════════════════
+function showWelcome(){
+  document.querySelectorAll('.tab-pane').forEach(p=>p.innerHTML='');
+  $('tab-overview').innerHTML=`
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px 20px">
+  <div style="font-size:56px;margin-bottom:20px">💰</div>
+  <div style="font-size:24px;font-weight:700;color:var(--text2);margin-bottom:10px">歡迎使用資產管理 App</div>
+  <div style="font-size:14px;color:var(--muted);margin-bottom:32px;max-width:360px;line-height:1.7">
+    請先從電腦版點「📤 匯出」下載備份 JSON，<br>再點下方按鈕匯入，即可在手機 / 任何裝置使用。
+  </div>
+  <label style="display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;padding:14px 28px;border-radius:10px;cursor:pointer;font-size:15px;font-weight:600;margin-bottom:16px">
+    📥 匯入備份資料
+    <input type="file" accept=".json" style="display:none" onchange="importData(this)">
+  </label>
+  <div style="font-size:12px;color:var(--muted2)">或點右上角「＋ 新增 / 更新月份」從頭開始建立</div>
+</div>`;
+  $('tab-overview').classList.add('active');
+}
+
 function renderOverview(){
+  if(D.overview.length===0){showWelcome();return;}
   const ov=D.overview,cur=ov[ov.length-1],prev=ov[ov.length-2]||cur;
   const nd=cur.netAssets-prev.netAssets,ndp=prev.netAssets?nd/prev.netAssets:0;
   const etfP=cur.totalAssets?cur.etfValue/cur.totalAssets:0;
@@ -1059,4 +982,69 @@ function exportData(){
   const a=document.createElement('a');
   a.href=url;a.download=`資產管理_備份_${ts}.json`;
   document.body.appendChild(a);a.click();
-  
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+function importData(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const parsed=JSON.parse(e.target.result);
+      if(!parsed||!Array.isArray(parsed.overview)){
+        alert('❌ 檔案格式錯誤：不是有效的資產管理備份檔。');
+        input.value='';return;
+      }
+      const keys=['overview','income','expenses','etf','holdings','transactions','goals','personalGoals','dividends','dividendSchedule'];
+      const missing=keys.filter(k=>parsed[k]===undefined);
+      if(missing.length>0){
+        const ok=confirm(`⚠️ 此備份缺少部分欄位：${missing.join(', ')}\n\n仍要繼續匯入嗎？（缺少的部分將保留目前資料）`);
+        if(!ok){input.value='';return;}
+        missing.forEach(k=>{ parsed[k]=D[k]; });
+      }
+      const ok=confirm(`確定要匯入此備份？\n\n📅 資料期間：${parsed.overview[0]?.month||'?'} ～ ${parsed.overview[parsed.overview.length-1]?.month||'?'}\n📊 月份筆數：${parsed.overview.length} 筆\n💼 持倉：${parsed.holdings?.length||0} 檔\n🎯 目標：${parsed.goals?.length||0} 個\n\n⚠️ 目前的資料將被取代！`);
+      if(!ok){input.value='';return;}
+      if(parsed.personalGoals)parsed.personalGoals.forEach(g=>{if(g.actualDate===undefined)g.actualDate='';});
+      D=parsed;
+      save();
+      _activeTab='overview';
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+      document.querySelector('[data-tab="overview"]').classList.add('active');
+      $('tab-overview').classList.add('active');
+      renderOverview();
+      alert('✅ 匯入成功！資料已載入。');
+    }catch(err){
+      alert('❌ 讀取失敗：檔案可能已損毀或格式不正確。\n\n錯誤：'+err.message);
+    }finally{
+      input.value='';
+    }
+  };
+  reader.readAsText(file,'utf-8');
+}
+
+// ═══════════════════════════════════════════
+// TAB SWITCH
+// ═══════════════════════════════════════════
+const REND={overview:renderOverview,income:renderIncome,expenses:renderExpenses,invest:renderInvest,dividend:renderDividend,goals:renderGoals,annual:renderAnnual};
+let _activeTab='overview';
+document.querySelectorAll('.tab').forEach(el=>{
+  el.addEventListener('click',()=>{
+    if(D.overview.length===0){showWelcome();return;}
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+    el.classList.add('active');
+    _activeTab=el.dataset.tab;
+    $('tab-'+_activeTab).classList.add('active');
+    REND[_activeTab]();
+  });
+});
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+$('hdrDate').textContent=new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric'});
+renderOverview();
+</script>
+</body>
+</html>
