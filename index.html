@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>資產管理 App</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#243040;--card:#2d3d52;--card2:#364a64;--card3:#3f5575;
+  --border:#3d5270;--border2:#4d6690;
+  --blue:#5690f5;--blue2:#80b0ff;--teal:#2acce0;
+  --green:#38be7a;--amber:#f0a830;--red:#e05a5a;--purple:#9880e8;
+  --text:#cfe3f5;--text2:#e8f3ff;--muted:#82a4c8;--muted2:#56789e;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+.hdr{background:var(--card);border-bottom:1px solid var(--border);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100}
+.hdr-logo{font-size:17px;font-weight:700;color:var(--blue2);letter-spacing:-.3px}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.hdr-date{color:var(--muted);font-size:12px}
+.btn{padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:500;transition:all .18s;line-height:1}
+.btn-primary{background:var(--blue);color:#fff}.btn-primary:hover{filter:brightness(1.1)}
+.btn-ghost{background:transparent;color:var(--blue2);border:1px solid var(--border2)}.btn-ghost:hover{background:var(--card3)}
+.btn-danger{background:rgba(224,90,90,.15);color:var(--red);border:1px solid rgba(224,90,90,.25)}.btn-danger:hover{background:rgba(224,90,90,.25)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-xs{padding:3px 8px;font-size:11px;border-radius:6px}
+.btn-icon{background:transparent;border:none;cursor:pointer;padding:4px 6px;border-radius:6px;color:var(--muted);font-size:14px;transition:all .15s}.btn-icon:hover{background:var(--card3);color:var(--text)}
+.tabs{background:var(--card);border-bottom:1px solid var(--border);padding:0 20px;display:flex;position:sticky;top:56px;z-index:99;overflow-x:auto;gap:2px}
+.tab{padding:11px 16px;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);font-size:13px;font-weight:500;transition:all .18s;white-space:nowrap}
+.tab:hover{color:var(--text)}.tab.active{color:var(--blue2);border-bottom-color:var(--blue)}
+.content{padding:22px;max-width:1300px;margin:0 auto}
+.tab-pane{display:none}.tab-pane.active{display:block}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-title{font-size:14px;font-weight:600;color:var(--text2)}
+.sec-sub{font-size:12px;color:var(--muted)}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:16px 18px}
+.kpi-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}
+.kpi-val{font-size:22px;font-weight:700;margin-bottom:4px;font-variant-numeric:tabular-nums;color:var(--text2)}
+.kpi-sub{font-size:11px;display:flex;align-items:center;gap:4px;color:var(--muted)}
+.kpi-bar{height:3px;background:rgba(255,255,255,.07);border-radius:2px;margin-top:9px;overflow:hidden}
+.kpi-fill{height:100%;border-radius:2px;transition:width .5s}
+.chart-row{display:grid;gap:14px;margin-bottom:18px}
+.col-21{grid-template-columns:2fr 1fr}.col-12{grid-template-columns:1fr 2fr}
+.col-2{grid-template-columns:1fr 1fr}.col-3{grid-template-columns:1fr 1fr 1fr}.col-1{grid-template-columns:1fr}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:18px}
+.chart-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.chart-wrap{position:relative}.chart-wrap canvas{max-height:250px}
+.tbl-card{background:var(--card);border:1px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:18px}
+.tbl-hdr{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.tbl-title{font-size:13px;font-weight:600;color:var(--text2)}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{padding:9px 14px;text-align:right;background:rgba(0,0,0,.12);color:var(--muted);font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border);white-space:nowrap}
+th:first-child{text-align:left}
+td{padding:10px 14px;text-align:right;border-bottom:1px solid rgba(255,255,255,.04);font-variant-numeric:tabular-nums;white-space:nowrap}
+td:first-child{text-align:left}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.025)}
+.pos{color:var(--green)}.neg{color:var(--red)}.neu{color:var(--muted)}
+.tag{background:rgba(86,144,245,.15);color:var(--blue2);padding:2px 7px;border-radius:5px;font-size:11px}
+.note-cell{color:var(--muted);font-size:11.5px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.b-green{background:rgba(56,190,122,.15);color:var(--green)}
+.b-amber{background:rgba(240,168,48,.15);color:var(--amber)}
+.b-muted{background:rgba(112,144,190,.1);color:var(--muted)}
+.goal-tbl-bar{width:80px;height:6px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;display:inline-block;vertical-align:middle}
+.goal-tbl-fill{height:100%;border-radius:4px;transition:width .5s}
+.g-row-done td{opacity:.75}
+.pg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.pg-card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:18px;position:relative}
+.pg-date{font-size:20px;font-weight:700;margin-bottom:3px}
+.pg-yrs{font-size:11px;color:var(--muted);margin-bottom:10px}
+.pg-name{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.pg-note{font-size:11.5px;color:var(--muted)}
+.pg-actions{display:flex;gap:6px;margin-top:10px}
+.calc-card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:18px;margin-bottom:18px;max-width:620px}
+.calc-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.calc-input-wrap{display:flex;flex-direction:column;gap:5px}
+.calc-lbl{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.calc-input{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text2);font-size:15px;font-weight:600;outline:none;transition:border-color .2s;width:100%;font-variant-numeric:tabular-nums}
+.calc-input:focus{border-color:var(--blue)}
+.calc-result{background:var(--card2);border-radius:10px;padding:13px 16px;margin-bottom:10px}
+.calc-result-main{font-size:20px;font-weight:700;color:var(--blue2);margin-bottom:3px}
+.calc-result-sub{font-size:11.5px;color:var(--muted)}
+.pay-sched{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:18px}
+.pay-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
+.pay-code{font-size:11px;color:var(--muted);margin-bottom:3px}
+.pay-name{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:8px}
+.pay-months{display:flex;flex-wrap:wrap;gap:4px}
+.pay-mon{background:rgba(42,204,224,.12);color:var(--teal);padding:2px 7px;border-radius:5px;font-size:11px}
+.pay-none{color:var(--muted2);font-size:11px}
+.annual-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:18px}
+.annual-card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:18px}
+.annual-yr{font-size:20px;font-weight:700;color:var(--text2);margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:10px}
+.annual-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:12.5px}
+.annual-row+.annual-row{border-top:1px solid rgba(255,255,255,.04)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+.overlay.open{display:flex}
+.modal{background:var(--card2);border:1px solid var(--border2);border-radius:14px;padding:26px;width:100%;max-width:540px;margin:auto}
+.modal-title{font-size:17px;font-weight:700;color:var(--text2);margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
+.modal-sec{font-size:10.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px;padding-top:12px;border-top:1px solid var(--border)}
+.modal-sec:first-of-type{margin-top:0;padding-top:0;border-top:none}
+.form-grid{display:grid;gap:10px}
+.form-grid-2{grid-template-columns:1fr 1fr}
+.form-grid-3{grid-template-columns:1fr 1fr 1fr}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:11px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.3px}
+.fg input,.fg select,.fg textarea{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:9px 11px;color:var(--text);font-size:13px;outline:none;transition:border-color .18s;width:100%;font-family:inherit}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue)}
+.fg .hint{font-size:10.5px;color:var(--muted2)}
+.autofill-note{font-size:11px;color:var(--teal);background:rgba(42,204,224,.08);border-radius:6px;padding:5px 10px;margin-bottom:8px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+@media(max-width:900px){.col-21,.col-12,.col-3,.col-2{grid-template-columns:1fr}.pg-grid{grid-template-columns:1fr 1fr}.calc-row{grid-template-columns:1fr}}
+@media(max-width:580px){.kpi-grid{grid-template-columns:1fr 1fr}.content{padding:12px}.hdr{padding:0 12px}.pg-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-logo">💰 資產管理</div>
+  <div class="hdr-right">
+    <span class="hdr-date" id="hdrDate"></span>
+    <button class="btn btn-ghost btn-sm" onclick="exportData()" title="匯出所有資料為 JSON 檔">📤 匯出</button>
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importFile').click()" title="從 JSON 檔匯入資料">📥 匯入</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
+    <button class="btn btn-ghost btn-sm" onclick="openMonthModal()">＋ 新增 / 更新月份</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="overview">📊 總覽</div>
+  <div class="tab" data-tab="income">💵 收入儲蓄</div>
+  <div class="tab" data-tab="expenses">💳 支出分析</div>
+  <div class="tab" data-tab="invest">📈 投資組合</div>
+  <div class="tab" data-tab="dividend">🌸 股利追蹤</div>
+  <div class="tab" data-tab="goals">🎯 目標追蹤</div>
+  <div class="tab" data-tab="annual">📅 年度總結</div>
+</div>
+
+<div class="content">
+  <div class="tab-pane active" id="tab-overview"></div>
+  <div class="tab-pane" id="tab-income"></div>
+  <div class="tab-pane" id="tab-expenses"></div>
+  <div class="tab-pane" id="tab-invest"></div>
+  <div class="tab-pane" id="tab-dividend"></div>
+  <div class="tab-pane" id="tab-goals"></div>
+  <div class="tab-pane" id="tab-annual"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-title" id="mTitle"></div>
+    <div class="modal-sub" id="mSub"></div>
+    <div id="mBody"></div>
+    <div class="modal-footer" id="mFooter"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const SEED={
+  overview:[
+    {month:'2025-06',netAssets:615982,income:49612,etfValue:450163,bankBalance:169391,totalAssets:669166,creditCard:53184,totalExpenses:79264},
+    {month:'2025-07',netAssets:602692,income:53382,etfValue:478015,bankBalance:124231,totalAssets:655628,creditCard:52936,totalExpenses:74482},
+    {month:'2025-08',netAssets:693103,income:55720,etfValue:470253,bankBalance:259084,totalAssets:729337,creditCard:36234,totalExpenses:75507},
+    {month:'2025-09',netAssets:731984,income:59670,etfValue:521670,bankBalance:246615,totalAssets:768285,creditCard:36301,totalExpenses:76480},
+    {month:'2025-10',netAssets:791111,income:57498,etfValue:568649,bankBalance:249750,totalAssets:818399,creditCard:27288,totalExpenses:55929},
+    {month:'2025-11',netAssets:761987,income:59555,etfValue:569236,bankBalance:249461,totalAssets:818697,creditCard:56710,totalExpenses:76518},
+    {month:'2025-12',netAssets:750823,income:55443,etfValue:610943,bankBalance:176161,totalAssets:787104,creditCard:36281,totalExpenses:58252},
+    {month:'2026-01',netAssets:842867,income:59555,etfValue:701205,bankBalance:168669,totalAssets:869874,creditCard:27007,totalExpenses:49194},
+    {month:'2026-02',netAssets:1036878,income:59298,etfValue:811110,bankBalance:198543,totalAssets:1068951,creditCard:32073,totalExpenses:60094},
+    {month:'2026-03',netAssets:956340,income:59555,etfValue:774250,bankBalance:153157,totalAssets:986962,creditCard:30622,totalExpenses:52912},
+  ],
+  income:[
+    {month:'2025-06',workIncome:49612,otherIncome:0,otherNote:'',savings:10000,savingsRate:0.2016,cumSavings:110000,changBank:0,esuBank:20726,yongBank:148665},
+    {month:'2025-07',workIncome:53382,otherIncome:15327,otherNote:'獎金',savings:10000,savingsRate:0.1873,cumSavings:135300,changBank:0,esuBank:1667,yongBank:122564},
+    {month:'2025-08',workIncome:55720,otherIncome:45718,otherNote:'獎金',savings:13000,savingsRate:0.2333,cumSavings:208300,changBank:42720,esuBank:28352,yongBank:188012},
+    {month:'2025-09',workIncome:59670,otherIncome:0,otherNote:'',savings:13000,savingsRate:0.2179,cumSavings:221300,changBank:45041,esuBank:1296,yongBank:200278},
+    {month:'2025-10',workIncome:57498,otherIncome:0,otherNote:'',savings:0,savingsRate:0,cumSavings:221300,changBank:41211,esuBank:1296,yongBank:207243},
+    {month:'2025-11',workIncome:59555,otherIncome:0,otherNote:'',savings:0,savingsRate:0,cumSavings:221300,changBank:57912,esuBank:1296,yongBank:190253},
+    {month:'2025-12',workIncome:55443,otherIncome:0,otherNote:'',savings:15000,savingsRate:0.2705,cumSavings:236300,changBank:36990,esuBank:88,yongBank:176161},
+    {month:'2026-01',workIncome:59555,otherIncome:0,otherNote:'',savings:13000,savingsRate:0.2183,cumSavings:249300,changBank:45431,esuBank:88,yongBank:168669},
+    {month:'2026-02',workIncome:59298,otherIncome:48790,otherNote:'獎金',savings:13000,savingsRate:0.2192,cumSavings:282300,changBank:54430,esuBank:0,yongBank:198543},
+    {month:'2026-03',workIncome:59555,otherIncome:0,otherNote:'',savings:12000,savingsRate:0.2015,cumSavings:294300,changBank:59304,esuBank:88,yongBank:153157},
+  ],
+  expenses:[
+    {month:'2025-06',total:79264,creditCard:53184,cash:8020,filialPiety:3500,rent:9940,beauty:1620,insurance:3000,note:'旅遊：日本差旅+香港機票&飯店'},
+    {month:'2025-07',total:74482,creditCard:52936,cash:3000,filialPiety:3500,rent:9847,beauty:2199,insurance:3000,note:'旅遊：日本差旅'},
+    {month:'2025-08',total:75507,creditCard:36234,cash:21420,filialPiety:3500,rent:9889,beauty:0,insurance:4464,note:'北投住宿、代墊同事聚餐、小黑瓶'},
+    {month:'2025-09',total:76480,creditCard:33301,cash:23500,filialPiety:5000,rent:10180,beauty:1499,insurance:3000,note:'高鐵費(中秋/國慶)'},
+    {month:'2025-10',total:55929,creditCard:23865,cash:13500,filialPiety:5000,rent:10141,beauty:0,insurance:3423,note:'旅遊：高雄高鐵、換日幣'},
+    {month:'2025-11',total:76518,creditCard:53287,cash:5000,filialPiety:5000,rent:9808,beauty:0,insurance:3423,note:'旅遊：高雄住宿、日本機票&飯店'},
+    {month:'2025-12',total:58252,creditCard:32858,cash:5000,filialPiety:5000,rent:9940,beauty:2031,insurance:3423,note:'旅遊：日本、台南住宿'},
+    {month:'2026-01',total:49194,creditCard:23584,cash:7400,filialPiety:5000,rent:9787,beauty:0,insurance:3423,note:''},
+    {month:'2026-02',total:60094,creditCard:28650,cash:13000,filialPiety:5000,rent:10021,beauty:0,insurance:3423,note:'旅遊：香港消費'},
+    {month:'2026-03',total:52912,creditCard:27199,cash:7350,filialPiety:5000,rent:9940,beauty:0,insurance:3423,note:'購物：禮物+BP周邊'},
+  ],
+  etf:[
+    {month:'2025-06',invested:348452,market:450163,pnl:101711,pnlRate:0.2919},
+    {month:'2025-07',invested:359671,market:478015,pnl:118344,pnlRate:0.3290},
+    {month:'2025-08',invested:346928,market:470253,pnl:123325,pnlRate:0.3555},
+    {month:'2025-09',invested:350745,market:521299,pnl:170554,pnlRate:0.4863},
+    {month:'2025-10',invested:349317,market:566848,pnl:217531,pnlRate:0.6227},
+    {month:'2025-11',invested:357365,market:561797,pnl:204432,pnlRate:0.5721},
+    {month:'2025-12',invested:365807,market:610450,pnl:244643,pnlRate:0.6688},
+    {month:'2026-01',invested:400689,market:698934,pnl:298245,pnlRate:0.7443},
+    {month:'2026-02',invested:431356,market:811110,pnl:402611,pnlRate:0.9334},
+    {month:'2026-03',invested:489051,market:774250,pnl:308146,pnlRate:0.6301},
+  ],
+  holdings:[
+    {code:'0050',name:'元大台灣50',shares:5252,avgCost:39.48,totalCost:207367,market:379982,pnl:179394,rate:0.8651},
+    {code:'00878',name:'國泰永續高股息',shares:1047,avgCost:21.95,totalCost:22978,market:22835,pnl:3191,rate:0.1389},
+    {code:'1101',name:'台泥',shares:85,avgCost:34.25,totalCost:2911,market:1955,pnl:-786,rate:-0.2700},
+    {code:'2330',name:'台積電',shares:25,avgCost:1910,totalCost:47750,market:44000,pnl:-3660,rate:-0.0766},
+    {code:'2890',name:'永豐金',shares:7383,avgCost:19.85,totalCost:146533,market:226658,pnl:91500,rate:0.6244},
+    {code:'3711',name:'日月光投控',shares:220,avgCost:136.42,totalCost:30012,market:72270,pnl:43457,rate:1.4480},
+    {code:'6770',name:'力積電',shares:500,avgCost:63.00,totalCost:31500,market:26550,pnl:-4950,rate:-0.1571},
+  ],
+  transactions:[
+    {month:'2026-03',date:'2026-03-24',type:'買進',name:'台積電',shares:10,price:1820,amount:18200,fee:25},
+    {month:'2026-03',date:'2026-03-09',type:'買進',name:'永豐金',shares:128,price:31.06,amount:3976,fee:1},
+    {month:'2026-03',date:'2026-03-09',type:'買進',name:'台灣50',shares:82,price:72.79,amount:5969,fee:1},
+    {month:'2026-03',date:'2026-03-03',type:'買進',name:'台積電',shares:5,price:1940,amount:9700,fee:13},
+    {month:'2026-03',date:'2026-03-02',type:'買進',name:'台積電',shares:10,price:1985,amount:19850,fee:28},
+    {month:'2026-02',date:'2026-02-23',type:'買進',name:'永豐金',shares:122,price:32.59,amount:3976,fee:1},
+    {month:'2026-02',date:'2026-02-09',type:'買進',name:'台灣50',shares:60,price:74.02,amount:4441,fee:1},
+    {month:'2026-01',date:'2026-01-21',type:'買進',name:'力積電',shares:500,price:63.00,amount:31500,fee:44},
+    {month:'2026-01',date:'2026-01-16',type:'買進',name:'永豐金',shares:136,price:29.27,amount:3981,fee:1},
+    {month:'2026-01',date:'2026-01-09',type:'買進',name:'台灣50',shares:84,price:69.77,amount:4465,fee:1},
+    {month:'2025-12',date:'2025-12-16',type:'買進',name:'永豐金',shares:142,price:28.06,amount:3985,fee:1},
+    {month:'2025-12',date:'2025-12-09',type:'買進',name:'台灣50',shares:70,price:63.64,amount:4455,fee:1},
+    {month:'2025-11',date:'2025-11-17',type:'買進',name:'永豐金',shares:150,price:26.65,amount:3998,fee:1},
+    {month:'2025-11',date:'2025-11-10',type:'買進',name:'台灣50',shares:71,price:62.92,amount:4467,fee:1},
+    {month:'2025-10',date:'2025-10-29',type:'賣出',name:'日月光投控',shares:110,price:211.5,amount:23265,fee:33},
+    {month:'2025-10',date:'2025-10-16',type:'買進',name:'永豐金',shares:153,price:26.10,amount:3994,fee:1},
+    {month:'2025-10',date:'2025-10-09',type:'買進',name:'台灣50',shares:72,price:61.83,amount:4452,fee:1},
+    {month:'2025-09',date:'2025-09-16',type:'買進',name:'永豐金',shares:160,price:24.98,amount:3996,fee:1},
+    {month:'2025-09',date:'2025-09-09',type:'買進',name:'台灣50',shares:83,price:53.81,amount:4466,fee:1},
+    {month:'2025-09',date:'2025-09-01',type:'賣出',name:'永豐中國',shares:425,price:11.26,amount:4785,fee:6},
+  ],
+  goals:[
+    {id:1,target:750000,deadline:'2025-12',achieved:true,achievedMonth:'2025-10'},
+    {id:2,target:850000,deadline:'2025-12',achieved:true,achievedMonth:'2026-02'},
+    {id:3,target:950000,deadline:'2026-03',achieved:true,achievedMonth:'2026-02'},
+    {id:4,target:1000000,deadline:'2026-05',achieved:true,achievedMonth:'2026-02'},
+    {id:5,target:1100000,deadline:'2026-12',achieved:false,achievedMonth:''},
+  ],
+  personalGoals:[
+    {id:1,targetDate:'2028年3月',goal:'去歐洲 ✈️',color:'#5690f5',note:'',actualDate:''},
+    {id:2,targetDate:'2031年底',goal:'買房 🏠',color:'#38be7a',note:'',actualDate:''},
+  ],
+  dividends:[],
+  dividendSchedule:[
+    {code:'0050',name:'元大台灣50',payMonths:[2,8],note:'每年2月、8月'},
+    {code:'00878',name:'國泰永續高股息',payMonths:[2,6,9,12],note:'每季（2/6/9/12月）'},
+    {code:'2890',name:'永豐金',payMonths:[9],note:'9月下旬'},
+    {code:'3711',name:'日月光投控',payMonths:[7],note:'7月下旬'},
+    {code:'6770',name:'力積電',payMonths:[],note:'不定期'},
+    {code:'1101',name:'台泥',payMonths:[],note:'不定期'},
+    {code:'2330',name:'台積電',payMonths:[],note:'不定期'},
+  ],
+};
+
+let localD = JSON.parse(localStorage.getItem('assetMgmt_v3') || 'null');
+let D = localD || JSON.parse(JSON.stringify(SEED));
+
+// 【修復 Bug 1】版本更新防呆：確保 localStorage 裡的舊資料，會自動補齊 SEED 中新增的陣列結構
+Object.keys(SEED).forEach(k => {
+  if (!D[k]) D[k] = JSON.parse(JSON.stringify(SEED[k]));
+});
+
+if(D.personalGoals)D.personalGoals.forEach(g=>{if(g.actualDate===undefined)g.actualDate='';});
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+const $=id=>document.getElementById(id);
+const nt=(n,d=0)=>n==null?'—':(Math.round(n*Math.pow(10,d))/Math.pow(10,d)).toLocaleString('zh-TW',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=n=>n==null?'—':((n*100).toFixed(1)+'%');
+const money=n=>n==null?'—':'$'+nt(n);
+const fmtM=m=>m?m.replace('-','年')+'月':'—';
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const uid=()=>Date.now()+Math.floor(Math.random()*1000);
+const save=()=>localStorage.setItem('assetMgmt_v3',JSON.stringify(D));
+const COLORS=['#5690f5','#38be7a','#f0a830','#9880e8','#e05a5a','#2acce0'];
+
+let _charts={};
+function mkChart(id,cfg){if(_charts[id])_charts[id].destroy();_charts[id]=new Chart($(id),cfg)}
+Chart.defaults.color='#82a4c8';
+Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
+Chart.defaults.font.size=11.5;
+Chart.defaults.plugins.legend.labels.boxWidth=10;
+Chart.defaults.plugins.legend.labels.padding=14;
+const PAL=['#5690f5','#2acce0','#38be7a','#f0a830','#9880e8','#e05a5a','#f07840'];
+
+// ═══════════════════════════════════════════
+// OVERVIEW
+// ═══════════════════════════════════════════
+function renderOverview(){
+  const ov=D.overview,cur=ov[ov.length-1],prev=ov[ov.length-2]||cur;
+  const nd=cur.netAssets-prev.netAssets,ndp=prev.netAssets?nd/prev.netAssets:0;
+  const etfP=cur.totalAssets?cur.etfValue/cur.totalAssets:0;
+  $('tab-overview').innerHTML=`
+<div class="kpi-grid">
+  <div class="kpi"><div class="kpi-lbl">資產淨額（最新）</div><div class="kpi-val" style="color:var(--blue2)">${money(cur.netAssets)}</div><div class="kpi-sub">${nd>=0?`<span class="pos">▲ ${money(nd)}</span>`:`<span class="neg">▼ ${money(Math.abs(nd))}</span>`}&nbsp;${ndp>=0?`<span class="pos">${pct(ndp)}</span>`:`<span class="neg">${pct(ndp)}</span>`} vs上月</div><div class="kpi-bar"><div class="kpi-fill" style="width:${clamp(cur.netAssets/1200000*100,5,100)}%;background:var(--blue)"></div></div></div>
+  <div class="kpi"><div class="kpi-lbl">總資產</div><div class="kpi-val">${money(cur.totalAssets)}</div><div class="kpi-sub"><span class="neu">${fmtM(cur.month)} 更新</span></div><div class="kpi-bar"><div class="kpi-fill" style="width:${clamp(cur.totalAssets/1200000*100,5,100)}%;background:var(--teal)"></div></div></div>
+  <div class="kpi"><div class="kpi-lbl">ETF 市值</div><div class="kpi-val" style="color:var(--purple)">${money(cur.etfValue)}</div><div class="kpi-sub"><span class="neu">佔總資產 ${pct(etfP)}</span></div><div class="kpi-bar"><div class="kpi-fill" style="width:${clamp(etfP*100,5,100)}%;background:var(--purple)"></div></div></div>
+  <div class="kpi"><div class="kpi-lbl">帳戶餘額合計</div><div class="kpi-val" style="color:var(--green)">${money(cur.bankBalance)}</div><div class="kpi-sub"><span class="neg">${money(cur.creditCard)}</span><span class="neu">&nbsp;待結清</span></div><div class="kpi-bar"><div class="kpi-fill" style="width:${clamp(cur.bankBalance/400000*100,5,100)}%;background:var(--green)"></div></div></div>
+</div>
+<div class="chart-row col-21">
+  <div class="chart-card"><div class="chart-title">資產淨額趨勢</div><div class="chart-wrap"><canvas id="c_net"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">資產配置（最新）</div><div class="chart-wrap" style="height:240px"><canvas id="c_alloc"></canvas></div></div>
+</div>
+<div class="chart-row col-1">
+  <div class="chart-card"><div class="chart-title">月收入 vs 月支出</div><div class="chart-wrap"><canvas id="c_io"></canvas></div></div>
+</div>
+<div class="tbl-card">
+  <div class="tbl-hdr"><div class="tbl-title">月度總覽</div></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>月份</th><th>資產淨額</th><th>月增減</th><th>總資產</th><th>ETF市值</th><th>帳戶餘額</th><th>待結清卡費</th><th>總支出</th></tr></thead>
+    <tbody>${[...ov].reverse().map((r,i,a)=>{const p=a[i+1];const d=p?r.netAssets-p.netAssets:null;return`<tr><td>${fmtM(r.month)}</td><td>${money(r.netAssets)}</td><td>${d!=null?(d>=0?`<span class="pos">▲${money(d)}</span>`:`<span class="neg">▼${money(Math.abs(d))}</span>`):'—'}</td><td>${money(r.totalAssets)}</td><td>${money(r.etfValue)}</td><td>${money(r.bankBalance)}</td><td class="neg">${money(r.creditCard)}</td><td class="neg">${money(r.totalExpenses)}</td></tr>`}).join('')}</tbody>
+  </table></div>
+</div>`;
+  const lbl=ov.map(r=>fmtM(r.month));
+  mkChart('c_net',{type:'line',data:{labels:lbl,datasets:[
+    {label:'資產淨額',data:ov.map(r=>r.netAssets),borderColor:'#5690f5',backgroundColor:'rgba(86,144,245,.07)',fill:true,tension:.35,pointRadius:4,pointHoverRadius:6,borderWidth:2},
+    {label:'總資產',data:ov.map(r=>r.totalAssets),borderColor:'#2acce0',backgroundColor:'rgba(42,204,224,.04)',fill:true,tension:.35,pointRadius:3,borderDash:[4,3],borderWidth:1.5},
+  ]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{color:'rgba(255,255,255,.03)'}}}}});
+  mkChart('c_alloc',{type:'doughnut',data:{labels:['ETF市值','銀行帳戶'],datasets:[{data:[cur.etfValue,cur.bankBalance],backgroundColor:['rgba(152,128,232,.8)','rgba(56,190,122,.75)'],borderColor:['#9880e8','#38be7a'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{tooltip:{callbacks:{label:c=>` ${c.label}: ${money(c.raw)} (${pct(c.raw/cur.totalAssets)})`}}}}});
+  mkChart('c_io',{type:'bar',data:{labels:lbl,datasets:[
+    {label:'工作收入',data:ov.map(r=>r.income),backgroundColor:'rgba(56,190,122,.7)',borderRadius:4},
+    {label:'總支出',data:ov.map(r=>r.totalExpenses),backgroundColor:'rgba(224,90,90,.6)',borderRadius:4},
+  ]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
+}
+
+// ═══════════════════════════════════════════
+// INCOME
+// ═══════════════════════════════════════════
+function renderIncome(){
+  const inc=D.income,cur=inc[inc.length-1],prev=inc[inc.length-2]||cur;
+  const avgR=inc.filter(r=>r.savingsRate>0).reduce((s,r)=>s+r.savingsRate,0)/Math.max(1,inc.filter(r=>r.savingsRate>0).length);
+  $('tab-income').innerHTML=`
+<div class="kpi-grid">
+  <div class="kpi"><div class="kpi-lbl">本月工作收入</div><div class="kpi-val" style="color:var(--green)">${money(cur.workIncome)}</div><div class="kpi-sub">${cur.workIncome>=prev.workIncome?`<span class="pos">▲ ${money(cur.workIncome-prev.workIncome)}</span>`:`<span class="neg">▼ ${money(Math.abs(cur.workIncome-prev.workIncome))}</span>`} vs上月</div></div>
+  <div class="kpi"><div class="kpi-lbl">其他收入（本月）</div><div class="kpi-val">${money(cur.otherIncome)}</div><div class="kpi-sub"><span class="neu">${cur.otherNote||'—'}</span></div></div>
+  <div class="kpi"><div class="kpi-lbl">本月投入儲蓄</div><div class="kpi-val" style="color:var(--teal)">${money(cur.savings)}</div><div class="kpi-sub">${cur.savingsRate>0?`<span class="pos">儲蓄率 ${pct(cur.savingsRate)}</span>`:'<span class="neu">—</span>'}</div></div>
+  <div class="kpi"><div class="kpi-lbl">累計儲蓄</div><div class="kpi-val">${money(cur.cumSavings)}</div><div class="kpi-sub"><span class="neu">近期平均儲蓄率 ${pct(avgR)}</span></div></div>
+</div>
+<div class="chart-row col-2">
+  <div class="chart-card"><div class="chart-title">月收入拆解</div><div class="chart-wrap"><canvas id="c_incb"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">累計儲蓄 & 儲蓄率</div><div class="chart-wrap"><canvas id="c_cum"></canvas></div></div>
+</div>
+<div class="chart-row col-2">
+  <div class="chart-card"><div class="chart-title">各銀行帳戶餘額（最新）</div><div class="chart-wrap" style="height:230px"><canvas id="c_banks"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">帳戶餘額歷史趨勢</div><div class="chart-wrap"><canvas id="c_bktrend"></canvas></div></div>
+</div>
+<div class="tbl-card">
+  <div class="tbl-hdr"><div class="tbl-title">收入儲蓄明細</div></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>月份</th><th>工作收入</th><th>其他收入</th><th>其他備註</th><th>投入儲蓄</th><th>儲蓄率</th><th>累計儲蓄</th><th>彰銀</th><th>玉山</th><th>永豐</th></tr></thead>
+    <tbody>${[...inc].reverse().map(r=>`<tr><td>${fmtM(r.month)}</td><td class="pos">${money(r.workIncome)}</td><td>${r.otherIncome>0?`<span class="pos">${money(r.otherIncome)}</span>`:'—'}</td><td class="note-cell">${r.otherNote||'—'}</td><td>${money(r.savings)}</td><td>${r.savingsRate>0?`<span class="pos">${pct(r.savingsRate)}</span>`:'—'}</td><td>${money(r.cumSavings)}</td><td>${r.changBank>0?money(r.changBank):'—'}</td><td>${r.esuBank>0?money(r.esuBank):'—'}</td><td>${r.yongBank>0?money(r.yongBank):'—'}</td></tr>`).join('')}</tbody>
+  </table></div>
+</div>`;
+  const lbl=inc.map(r=>fmtM(r.month));
+  mkChart('c_incb',{type:'bar',data:{labels:lbl,datasets:[{label:'工作收入',data:inc.map(r=>r.workIncome),backgroundColor:'rgba(56,190,122,.72)',borderRadius:4},{label:'其他收入',data:inc.map(r=>r.otherIncome),backgroundColor:'rgba(42,204,224,.65)',borderRadius:4}]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}}}}});
+  mkChart('c_cum',{type:'line',data:{labels:lbl,datasets:[{label:'累計儲蓄',data:inc.map(r=>r.cumSavings),borderColor:'#f0a830',backgroundColor:'rgba(240,168,48,.07)',fill:true,tension:.35,pointRadius:4,yAxisID:'y'},{label:'儲蓄率(%)',data:inc.map(r=>r.savingsRate*100),borderColor:'#9880e8',tension:.35,pointRadius:4,yAxisID:'y2',borderDash:[3,2]}]},options:{responsive:true,scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},y2:{position:'right',ticks:{callback:v=>v.toFixed(0)+'%'},grid:{display:false}},x:{grid:{display:false}}}}});
+  mkChart('c_banks',{type:'doughnut',data:{labels:['彰銀','玉山','永豐'],datasets:[{data:[cur.changBank||0,cur.esuBank||0,cur.yongBank||0],backgroundColor:['rgba(86,144,245,.8)','rgba(42,204,224,.8)','rgba(56,190,122,.8)'],borderColor:['#5690f5','#2acce0','#38be7a'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{tooltip:{callbacks:{label:c=>` ${c.label}: ${money(c.raw)}`}}}}});
+  mkChart('c_bktrend',{type:'line',data:{labels:lbl,datasets:[{label:'彰銀',data:inc.map(r=>r.changBank||0),borderColor:'#5690f5',tension:.3,pointRadius:3},{label:'玉山',data:inc.map(r=>r.esuBank||0),borderColor:'#2acce0',tension:.3,pointRadius:3},{label:'永豐',data:inc.map(r=>r.yongBank||0),borderColor:'#38be7a',tension:.3,pointRadius:3}]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
+}
+
+// ═══════════════════════════════════════════
+// EXPENSES
+// ═══════════════════════════════════════════
+function renderExpenses(){
+  const exp=D.expenses,cur=exp[exp.length-1],prev=exp[exp.length-2]||cur;
+  const fixed=cur.filialPiety+cur.rent+(cur.insurance||0);
+  const avg=exp.reduce((s,r)=>s+r.total,0)/exp.length;
+  $('tab-expenses').innerHTML=`
+<div class="kpi-grid">
+  <div class="kpi"><div class="kpi-lbl">本月總支出</div><div class="kpi-val" style="color:var(--amber)">${money(cur.total)}</div><div class="kpi-sub">${cur.total-prev.total>=0?`<span class="neg">▲ ${money(Math.abs(cur.total-prev.total))}</span>`:`<span class="pos">▼ ${money(Math.abs(cur.total-prev.total))}</span>`} vs上月</div></div>
+  <div class="kpi"><div class="kpi-lbl">卡費（待結清）</div><div class="kpi-val">${money(cur.creditCard)}</div><div class="kpi-sub"><span class="neu">佔 ${pct(cur.creditCard/cur.total)}</span></div></div>
+  <div class="kpi"><div class="kpi-lbl">固定支出</div><div class="kpi-val">${money(fixed)}</div><div class="kpi-sub"><span class="neu">房租+孝親+保險</span></div></div>
+  <div class="kpi"><div class="kpi-lbl">平均月支出</div><div class="kpi-val">${money(avg)}</div><div class="kpi-sub"><span class="neu">近 ${exp.length} 個月</span></div></div>
+</div>
+<div class="chart-row col-2">
+  <div class="chart-card"><div class="chart-title">支出分類（${fmtM(cur.month)}）</div><div class="chart-wrap" style="height:260px"><canvas id="c_expd"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">月支出趨勢</div><div class="chart-wrap"><canvas id="c_exptr"></canvas></div></div>
+</div>
+<div class="chart-row col-1">
+  <div class="chart-card"><div class="chart-title">支出分類堆疊</div><div class="chart-wrap"><canvas id="c_expst"></canvas></div></div>
+</div>
+<div class="tbl-card">
+  <div class="tbl-hdr"><div class="tbl-title">支出明細</div></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>月份</th><th>總支出</th><th>卡費</th><th>現金/轉帳</th><th>孝親費</th><th>房租</th><th>美甲美容</th><th>保險</th><th>備註</th></tr></thead>
+    <tbody>${[...exp].reverse().map(r=>`<tr><td>${fmtM(r.month)}</td><td><span class="neg">${money(r.total)}</span></td><td>${money(r.creditCard)}</td><td>${money(r.cash)}</td><td>${money(r.filialPiety)}</td><td>${money(r.rent)}</td><td>${r.beauty>0?money(r.beauty):'—'}</td><td>${money(r.insurance)}</td><td class="note-cell">${r.note||'—'}</td></tr>`).join('')}</tbody>
+  </table></div>
+</div>`;
+  mkChart('c_expd',{type:'doughnut',data:{labels:['卡費','現金/轉帳','孝親費','房租','美甲美容','保險'],datasets:[{data:[cur.creditCard,cur.cash,cur.filialPiety,cur.rent,cur.beauty,cur.insurance],backgroundColor:PAL.map(c=>c+'bb'),borderColor:PAL,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{tooltip:{callbacks:{label:c=>` ${c.label}: ${money(c.raw)} (${pct(c.raw/cur.total)})`}}}}});
+  const lbl=exp.map(r=>fmtM(r.month));
+  mkChart('c_exptr',{type:'line',data:{labels:lbl,datasets:[{label:'總支出',data:exp.map(r=>r.total),borderColor:'#f0a830',backgroundColor:'rgba(240,168,48,.07)',fill:true,tension:.35,pointRadius:4}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
+  mkChart('c_expst',{type:'bar',data:{labels:lbl,datasets:[
+    {label:'卡費',data:exp.map(r=>r.creditCard),backgroundColor:'rgba(224,90,90,.7)',borderRadius:3},
+    {label:'現金/轉帳',data:exp.map(r=>r.cash),backgroundColor:'rgba(240,168,48,.7)',borderRadius:3},
+    {label:'孝親費',data:exp.map(r=>r.filialPiety),backgroundColor:'rgba(56,190,122,.7)',borderRadius:3},
+    {label:'房租',data:exp.map(r=>r.rent),backgroundColor:'rgba(86,144,245,.7)',borderRadius:3},
+    {label:'美甲美容',data:exp.map(r=>r.beauty),backgroundColor:'rgba(152,128,232,.7)',borderRadius:3},
+    {label:'保險',data:exp.map(r=>r.insurance),backgroundColor:'rgba(42,204,224,.65)',borderRadius:3},
+  ]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}}}}});
+}
+
+// ═══════════════════════════════════════════
+// INVEST
+// ═══════════════════════════════════════════
+function renderInvest(){
+  const etf=D.etf,cur=etf[etf.length-1],prev=etf[etf.length-2]||cur;
+  const h=D.holdings;
+  const tMkt=h.reduce((s,r)=>s+r.market,0),tCost=h.reduce((s,r)=>s+r.totalCost,0),tPnl=h.reduce((s,r)=>s+r.pnl,0);
+  $('tab-invest').innerHTML=`
+<div class="kpi-grid">
+  <div class="kpi"><div class="kpi-lbl">投資組合市值</div><div class="kpi-val" style="color:var(--purple)">${money(tMkt)}</div><div class="kpi-sub"><span class="neu">總成本 ${money(tCost)}</span></div></div>
+  <div class="kpi"><div class="kpi-lbl">未實現損益（含息）</div><div class="kpi-val" style="color:${tPnl>=0?'var(--green)':'var(--red)'}">${money(tPnl)}</div><div class="kpi-sub">${tPnl>=0?`<span class="pos">${pct(tPnl/tCost)}</span>`:`<span class="neg">${pct(tPnl/tCost)}</span>`}</div></div>
+  <div class="kpi"><div class="kpi-lbl">ETF 損益率（最新）</div><div class="kpi-val" style="color:var(--green)">${pct(cur.pnlRate)}</div><div class="kpi-sub"><span class="neu">投入 ${money(cur.invested)}</span></div></div>
+  <div class="kpi"><div class="kpi-lbl">市值月增減</div><div class="kpi-val">${cur.market-prev.market>=0?`<span class="pos">${money(cur.market-prev.market)}</span>`:`<span class="neg">${money(cur.market-prev.market)}</span>`}</div><div class="kpi-sub">${pct((cur.market-prev.market)/prev.market)}</div></div>
+</div>
+<div class="chart-row col-21">
+  <div class="chart-card"><div class="chart-title">ETF 市值 & 投入趨勢</div><div class="chart-wrap"><canvas id="c_etft"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">持倉市值分配</div><div class="chart-wrap" style="height:250px"><canvas id="c_hpie"></canvas></div></div>
+</div>
+<div class="chart-row col-1">
+  <div class="chart-card"><div class="chart-title">各股未實現損益 & 報酬率</div><div class="chart-wrap"><canvas id="c_pnl"></canvas></div></div>
+</div>
+<div class="tbl-card">
+  <div class="tbl-hdr">
+    <div class="tbl-title">持倉明細</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="openStatementUpload()">📷 上傳對帳單</button>
+      <button class="btn btn-ghost btn-sm" onclick="openHoldingModal()">＋ 新增持股</button>
+    </div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>代號</th><th>名稱</th><th>股數</th><th>平均成本</th><th>總投資成本</th><th>參考市值</th><th>未實現損益</th><th>報酬率</th><th style="width:72px;text-align:center">操作</th></tr></thead>
+    <tbody>
+    ${h.map(r=>`<tr>
+      <td><span class="tag">${r.code}</span></td><td>${r.name}</td><td>${nt(r.shares)}</td><td>$${nt(r.avgCost,2)}</td><td>${money(r.totalCost)}</td><td>${money(r.market)}</td>
+      <td class="${r.pnl>=0?'pos':'neg'}">${r.pnl>=0?'▲':'▼'}${money(Math.abs(r.pnl))}</td>
+      <td class="${r.rate>=0?'pos':'neg'}">${pct(r.rate)}</td>
+      <td style="text-align:center"><button class="btn-icon" onclick="openHoldingModal('${r.code}')" title="編輯">✏️</button><button class="btn-icon" onclick="delHolding('${r.code}')" title="刪除">🗑</button></td>
+    </tr>`).join('')}
+    <tr style="background:rgba(0,0,0,.12)"><td colspan="4"><b>合計</b></td><td><b>${money(tCost)}</b></td><td><b>${money(tMkt)}</b></td><td class="${tPnl>=0?'pos':'neg'}"><b>${tPnl>=0?'▲':'▼'}${money(Math.abs(tPnl))}</b></td><td class="${tPnl>=0?'pos':'neg'}"><b>${pct(tPnl/tCost)}</b></td><td></td></tr>
+    </tbody>
+  </table></div>
+</div>
+<div class="tbl-card">
+  <div class="tbl-hdr"><div class="tbl-title">ETF 收益歷史</div></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>月份</th><th>投入金額</th><th>當月市值</th><th>損益</th><th>損益率</th></tr></thead>
+    <tbody>${[...etf].reverse().map(r=>`<tr><td>${fmtM(r.month)}</td><td>${money(r.invested)}</td><td>${money(r.market)}</td><td class="${r.pnl>=0?'pos':'neg'}">${r.pnl>=0?'▲':'▼'}${money(Math.abs(r.pnl))}</td><td class="${r.pnlRate>=0?'pos':'neg'}">${pct(r.pnlRate)}</td></tr>`).join('')}</tbody>
+  </table></div>
+</div>
+<div class="tbl-card">
+  <div class="tbl-hdr"><div class="tbl-title">交易紀錄</div><button class="btn btn-ghost btn-sm" onclick="openTxModal()">＋ 新增交易</button></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>日期</th><th>交易別</th><th>證券</th><th>股數</th><th>單價</th><th>金額</th><th>手續費</th></tr></thead>
+    <tbody>${D.transactions.map(r=>`<tr><td>${r.date}</td><td><span class="badge ${r.type==='買進'?'b-green':'b-amber'}">${r.type}</span></td><td>${r.name}</td><td>${nt(r.shares)}</td><td>$${nt(r.price,2)}</td><td>${money(r.amount)}</td><td>$${nt(r.fee)}</td></tr>`).join('')}</tbody>
+  </table></div>
+</div>`;
+  const lbl=etf.map(r=>fmtM(r.month));
+  mkChart('c_etft',{type:'line',data:{labels:lbl,datasets:[{label:'ETF市值',data:etf.map(r=>r.market),borderColor:'#9880e8',backgroundColor:'rgba(152,128,232,.07)',fill:true,tension:.35,pointRadius:4},{label:'投入金額',data:etf.map(r=>r.invested),borderColor:'#5090a0',tension:.35,pointRadius:3,borderDash:[4,3],borderWidth:1.5}]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
+  mkChart('c_hpie',{type:'doughnut',data:{labels:h.map(r=>r.name),datasets:[{data:h.map(r=>r.market),backgroundColor:PAL.map(c=>c+'bb'),borderColor:PAL,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{tooltip:{callbacks:{label:c=>` ${c.label}: ${money(c.raw)} (${pct(c.raw/tMkt)})`}}}}});
+  mkChart('c_pnl',{type:'bar',data:{labels:h.map(r=>r.name),datasets:[
+    {label:'未實現損益',data:h.map(r=>r.pnl),backgroundColor:h.map(r=>r.pnl>=0?'rgba(56,190,122,.72)':'rgba(224,90,90,.68)'),borderRadius:5,yAxisID:'y'},
+    {label:'報酬率',data:h.map(r=>r.rate*100),type:'line',borderColor:'#f0a830',pointRadius:5,pointBackgroundColor:'#f0a830',borderWidth:2,yAxisID:'y2'},
+  ]},options:{responsive:true,scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},y2:{position:'right',ticks:{callback:v=>v+'%'},grid:{display:false}},x:{grid:{display:false}}}}});
+}
+
+// ═══════════════════════════════════════════
+// DIVIDEND
+// ═══════════════════════════════════════════
+function renderDividend(){
+  const divs=D.dividends;
+  const totalDiv=divs.reduce((s,r)=>s+r.totalDividend,0);
+  const curYr=new Date().getFullYear().toString();
+  const yrDiv=divs.filter(r=>r.date.startsWith(curYr)).reduce((s,r)=>s+r.totalDividend,0);
+  $('tab-dividend').innerHTML=`
+<div class="kpi-grid">
+  <div class="kpi"><div class="kpi-lbl">歷史累計股利</div><div class="kpi-val" style="color:var(--amber)">${money(totalDiv)}</div><div class="kpi-sub"><span class="neu">共 ${divs.length} 筆紀錄</span></div></div>
+  <div class="kpi"><div class="kpi-lbl">${curYr}年累計</div><div class="kpi-val">${money(yrDiv)}</div><div class="kpi-sub"><span class="neu">今年發放</span></div></div>
+</div>
+<div class="sec-hdr" style="margin-bottom:10px"><div class="sec-title">📅 股利發放時程</div></div>
+<div class="pay-sched">
+  ${D.dividendSchedule.map(s=>`<div class="pay-card"><div class="pay-code">${s.code}</div><div class="pay-name">${s.name}</div><div class="pay-months">${s.payMonths.length>0?s.payMonths.map(m=>`<span class="pay-mon">${m}月</span>`).join(''):'<span class="pay-none">不定期</span>'}</div><div style="font-size:11px;color:var(--muted2);margin-top:6px">${s.note}</div></div>`).join('')}
+</div>
+<div class="tbl-card">
+  <div class="tbl-hdr"><div class="tbl-title">股利收入紀錄</div><button class="btn btn-ghost btn-sm" onclick="openDivModal()">＋ 新增股利</button></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>日期</th><th>股票</th><th>名稱</th><th>每股股利</th><th>持有股數</th><th>合計股利</th><th>備註</th></tr></thead>
+    <tbody>${divs.length===0
+      ?`<tr><td colspan="7" style="padding:30px;text-align:center;color:var(--muted2)">尚無紀錄，點擊「＋ 新增股利」開始記錄</td></tr>`
+      :[...divs].sort((a,b)=>b.date.localeCompare(a.date)).map(r=>`<tr><td>${r.date}</td><td><span class="tag">${r.code}</span></td><td>${r.name}</td><td>$${nt(r.divPerShare,2)}</td><td>${nt(r.shares)}</td><td class="pos">${money(r.totalDividend)}</td><td class="note-cell">${r.note||'—'}</td></tr>`).join('')
+    }</tbody>
+  </table></div>
+</div>`;
+  if(divs.length>0){
+    const byMonth={};
+    divs.forEach(r=>{const m=r.date.slice(0,7);byMonth[m]=(byMonth[m]||0)+r.totalDividend});
+    const keys=Object.keys(byMonth).sort();
+    const container=document.createElement('div');container.className='chart-row col-1';
+    const cc=document.createElement('div');cc.className='chart-card';
+    cc.innerHTML=`<div class="chart-title">月度股利收入</div><div class="chart-wrap"><canvas id="c_div"></canvas></div>`;
+    container.appendChild(cc);
+    $('tab-dividend').insertBefore(container,$('tab-dividend').querySelector('.tbl-card'));
+    mkChart('c_div',{type:'bar',data:{labels:keys.map(fmtM),datasets:[{label:'股利',data:keys.map(k=>byMonth[k]),backgroundColor:'rgba(240,168,48,.72)',borderRadius:5}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
+  }
+}
+
+// ═══════════════════════════════════════════
+// GOALS
+// ═══════════════════════════════════════════
+function renderGoals(){
+  const curNet=D.overview[D.overview.length-1].netAssets;
+  const recSav=D.income.filter(r=>r.savings>0).slice(-3);
+  const avgSav=recSav.length>0?recSav.reduce((s,r)=>s+r.savings,0)/recSav.length:0;
+  $('tab-goals').innerHTML=`
+<div class="sec-hdr">
+  <div class="sec-title">💰 資產目標</div>
+  <button class="btn btn-ghost btn-sm" onclick="openGoalModal()">＋ 新增目標</button>
+</div>
+<div class="tbl-card">
+  <div class="tbl-hdr"><div class="tbl-title">目標進度一覽</div><span class="sec-sub">目前資產淨額 ${money(curNet)}</span></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>目標金額</th><th>截止月份</th><th>進度</th><th>狀態</th><th>達成月份</th><th style="width:80px">操作</th></tr></thead>
+    <tbody id="goalTbody">${renderGoalRows(curNet)}</tbody>
+  </table></div>
+</div>
+<div class="sec-hdr"><div class="sec-title">🧮 達成目標計算機</div></div>
+<div class="calc-card">
+  <div class="calc-row">
+    <div class="calc-input-wrap">
+      <div class="calc-lbl">目標金額（元）</div>
+      <input class="calc-input" type="number" id="calcTarget" value="1100000" oninput="calcGoal()">
+    </div>
+    <div class="calc-input-wrap">
+      <div class="calc-lbl">每月儲蓄（元）</div>
+      <input class="calc-input" type="number" id="calcSav" value="${Math.round(avgSav)}" oninput="calcGoal()">
+    </div>
+  </div>
+  <div id="calcResult"></div>
+</div>
+<div class="sec-hdr" style="margin-top:4px">
+  <div class="sec-title">🌟 個人目標</div>
+  <button class="btn btn-ghost btn-sm" onclick="openPGModal()">＋ 新增</button>
+</div>
+<div class="pg-grid" id="pgGrid">${renderPGCards()}</div>`;
+  calcGoal();
+}
+
+function renderGoalRows(curNet){
+  if(!curNet)curNet=D.overview[D.overview.length-1].netAssets;
+  return D.goals.map(g=>{
+    const p=clamp(curNet/g.target*100,0,100);
+    const barColor=g.achieved?'var(--green)':p>=80?'var(--amber)':'var(--blue)';
+    return`<tr class="${g.achieved?'g-row-done':''}">
+      <td><b>${money(g.target)}</b></td><td>${g.deadline}</td>
+      <td style="width:140px"><div style="display:flex;align-items:center;gap:8px"><div class="goal-tbl-bar"><div class="goal-tbl-fill" style="width:${p}%;background:${barColor}"></div></div><span style="font-size:11px;color:var(--muted)">${p.toFixed(0)}%</span></div></td>
+      <td>${g.achieved?`<span class="badge b-green">✓ 達成</span>`:`<span class="badge b-amber">進行中</span>`}</td>
+      <td>${g.achievedMonth||'—'}</td>
+      <td><button class="btn-icon" onclick="openGoalModal(${g.id})" title="編輯">✏️</button><button class="btn-icon" onclick="delGoal(${g.id})" title="刪除">🗑</button></td>
+    </tr>`
+  }).join('')||`<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--muted2)">尚無目標，請新增</td></tr>`;
+}
+
+function renderPGCards(){
+  return D.personalGoals.map(g=>`
+    <div class="pg-card" style="border-color:${g.color||'#5690f5'}44">
+      <div class="pg-date" style="color:${g.color||'#5690f5'}">${g.targetDate||'（未設定）'}</div>
+      <div class="pg-yrs">${g.actualDate?`<span style="color:var(--green)">✅ 完成於 ${g.actualDate}</span>`:`距今約 ${estimateYears(g.targetDate)}`}</div>
+      <div class="pg-name">${g.goal}</div>
+      ${g.note&&!g.actualDate?`<div class="pg-note">${g.note}</div>`:''}
+      <div class="pg-actions">
+        <button class="btn btn-xs btn-ghost" onclick="openPGModal(${g.id})">✏️ 編輯</button>
+        <button class="btn btn-xs btn-danger" onclick="delPG(${g.id})">🗑</button>
+      </div>
+    </div>`).join('')||`<div style="color:var(--muted2);font-size:13px;padding:16px">尚無個人目標</div>`;
+}
+
+function estimateYears(dateStr){
+  const m=dateStr?dateStr.match(/(\d{4})/):null;
+  if(!m)return'—';
+  const diff=parseInt(m[1])-new Date().getFullYear();
+  return diff<=0?'已到期':diff+'年';
+}
+
+function calcGoal(){
+  const target=parseFloat($('calcTarget')?.value)||0;
+  const monthlySav=parseFloat($('calcSav')?.value)||0;
+  const curNet=D.overview[D.overview.length-1].netAssets;
+  const r=$('calcResult');if(!r)return;
+  if(!target||!monthlySav){r.innerHTML='';return}
+  const gap=Math.max(0,target-curNet);
+  const mos=gap>0?Math.ceil(gap/monthlySav):0;
+  const now=new Date();
+  const arr=new Date(now.getFullYear(),now.getMonth()+mos,1);
+  const arrStr=arr.toLocaleDateString('zh-TW',{year:'numeric',month:'long'});
+  let html=gap<=0
+    ?`<div class="calc-result"><div class="calc-result-main" style="color:var(--green)">✓ 已達成！</div><div class="calc-result-sub">目前資產 ${money(curNet)} 已超過目標 ${money(target)}</div></div>`
+    :`<div class="calc-result"><div class="calc-result-main">約 ${mos} 個月後 → ${arrStr}</div><div class="calc-result-sub">距目標還差 ${money(gap)}，以每月 ${money(monthlySav)} 計算</div></div>`;
+  html+=`<div style="display:flex;gap:8px;flex-wrap:wrap">${[8000,12000,15000,20000].map(s=>{
+    const m2=gap>0?Math.ceil(gap/s):0;
+    return`<div style="background:var(--card3);border-radius:8px;padding:8px 12px;font-size:12px;min-width:90px"><div style="color:var(--muted);margin-bottom:2px">月存${money(s)}</div><div style="color:var(--text2);font-weight:600">${m2===0?'✓ 已達成':`${m2} 個月`}</div></div>`;
+  }).join('')}</div>`;
+  r.innerHTML=html;
+}
+
+function delGoal(id){if(!confirm('確定刪除此目標？'))return;D.goals=D.goals.filter(g=>g.id!==id);save();renderGoals()}
+function delPG(id){if(!confirm('確定刪除此個人目標？'))return;D.personalGoals=D.personalGoals.filter(g=>g.id!==id);save();renderGoals()}
+
+// ═══════════════════════════════════════════
+// ANNUAL
+// ═══════════════════════════════════════════
+function renderAnnual(){
+  const byYr={};
+  D.overview.forEach(r=>{const y=r.month.slice(0,4);if(!byYr[y])byYr[y]={ov:[],inc:[],exp:[]};byYr[y].ov.push(r)});
+  D.income.forEach(r=>{const y=r.month.slice(0,4);if(byYr[y])byYr[y].inc.push(r)});
+  D.expenses.forEach(r=>{const y=r.month.slice(0,4);if(byYr[y])byYr[y].exp.push(r)});
+  const yrs=Object.keys(byYr).sort();
+  const annual=yrs.map(y=>{
+    const {ov,inc,exp}=byYr[y];
+    const totalInc=ov.reduce((s,r)=>s+r.income,0);
+    const totalExp=exp.reduce((s,r)=>s+r.total,0);
+    const totalSav=inc.reduce((s,r)=>s+r.savings,0);
+    const savRate=totalInc>0?totalSav/totalInc:0;
+    const first=ov[0],last=ov[ov.length-1];
+    return{y,n:ov.length,totalInc,avgInc:totalInc/ov.length,totalExp,avgExp:totalExp/Math.max(1,exp.length),totalSav,savRate,startNet:first.netAssets,endNet:last.netAssets,netChg:last.netAssets-first.netAssets};
+  });
+  $('tab-annual').innerHTML=`
+<div class="sec-hdr"><div class="sec-title">📅 年度財務摘要</div></div>
+<div class="annual-cards">
+  ${annual.map(a=>`<div class="annual-card">
+    <div class="annual-yr">${a.y}年 <span style="font-size:12px;color:var(--muted);font-weight:400">（共 ${a.n} 個月）</span></div>
+    <div class="annual-row"><span>總工作收入</span><span class="pos">${money(a.totalInc)}</span></div>
+    <div class="annual-row"><span>平均月收入</span><span>${money(a.avgInc)}</span></div>
+    <div class="annual-row"><span>總支出</span><span class="neg">${money(a.totalExp)}</span></div>
+    <div class="annual-row"><span>平均月支出</span><span class="neg">${money(a.avgExp)}</span></div>
+    <div class="annual-row"><span>年度累計儲蓄</span><span style="color:var(--teal)">${money(a.totalSav)}</span></div>
+    <div class="annual-row"><span>年均儲蓄率</span><span style="color:var(--teal)">${pct(a.savRate)}</span></div>
+    <div class="annual-row" style="margin-top:6px;padding-top:8px;border-top:1px solid var(--border)"><span>期初資產淨額</span><span>${money(a.startNet)}</span></div>
+    <div class="annual-row"><span>期末資產淨額</span><span>${money(a.endNet)}</span></div>
+    <div class="annual-row"><span>期間增減</span><span class="${a.netChg>=0?'pos':'neg'}">${a.netChg>=0?'▲':'▼'}${money(Math.abs(a.netChg))}</span></div>
+  </div>`).join('')}
+</div>
+<div class="chart-row col-2">
+  <div class="chart-card"><div class="chart-title">年度收入 vs 支出</div><div class="chart-wrap"><canvas id="c_anio"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">年度資產淨額成長</div><div class="chart-wrap"><canvas id="c_annet"></canvas></div></div>
+</div>
+<div class="tbl-card">
+  <div class="tbl-hdr"><div class="tbl-title">年度對比</div></div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>年度</th><th>月份數</th><th>總收入</th><th>月均收入</th><th>總支出</th><th>月均支出</th><th>累計儲蓄</th><th>儲蓄率</th><th>期末淨資產</th><th>期間增減</th></tr></thead>
+    <tbody>${annual.map(a=>`<tr><td><b>${a.y}年</b></td><td>${a.n}</td><td class="pos">${money(a.totalInc)}</td><td>${money(a.avgInc)}</td><td class="neg">${money(a.totalExp)}</td><td class="neg">${money(a.avgExp)}</td><td style="color:var(--teal)">${money(a.totalSav)}</td><td style="color:var(--teal)">${pct(a.savRate)}</td><td>${money(a.endNet)}</td><td class="${a.netChg>=0?'pos':'neg'}">${a.netChg>=0?'▲':'▼'}${money(Math.abs(a.netChg))}</td></tr>`).join('')}</tbody>
+  </table></div>
+</div>`;
+  mkChart('c_anio',{type:'bar',data:{labels:annual.map(a=>a.y+'年'),datasets:[{label:'總收入',data:annual.map(a=>a.totalInc),backgroundColor:'rgba(56,190,122,.7)',borderRadius:5},{label:'總支出',data:annual.map(a=>a.totalExp),backgroundColor:'rgba(224,90,90,.6)',borderRadius:5}]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
+  mkChart('c_annet',{type:'bar',data:{labels:annual.map(a=>a.y+'年'),datasets:[{label:'期末資產淨額',data:annual.map(a=>a.endNet),backgroundColor:'rgba(86,144,245,.72)',borderRadius:5},{label:'期間增減',data:annual.map(a=>a.netChg),backgroundColor:annual.map(a=>a.netChg>=0?'rgba(56,190,122,.7)':'rgba(224,90,90,.6)'),borderRadius:5}]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
+}
+
+// ═══════════════════════════════════════════
+// MODAL SYSTEM  ← 直接綁定 onclick，完全避免全域變數問題
+// ═══════════════════════════════════════════
+function openModal(title,sub,body,saveH,saveLbl='儲存'){
+  $('mTitle').textContent=title;
+  $('mSub').textContent=sub||'';
+  $('mBody').innerHTML=body;
+  if(saveH){
+    $('mFooter').innerHTML=`<button class="btn btn-ghost" onclick="closeModal()">取消</button><button class="btn btn-primary" id="__mSaveBtn">${saveLbl}</button>`;
+    document.getElementById('__mSaveBtn').onclick=saveH;
+  }else{
+    $('mFooter').innerHTML=`<button class="btn btn-ghost" onclick="closeModal()">關閉</button>`;
+  }
+  $('overlay').classList.add('open');
+}
+function closeModal(){$('overlay').classList.remove('open');}
+$('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))closeModal()});
+
+// ── 新增 / 更新月份 ──
+function openMonthModal(){
+  const lastExp=D.expenses[D.expenses.length-1]||{};
+  const last=D.overview[D.overview.length-1];
+  const [y,m]=last.month.split('-').map(Number);
+  const nd=new Date(y,m,1);
+  const nm=nd.getFullYear()+'-'+String(nd.getMonth()+1).padStart(2,'0');
+  openModal('新增 / 更新月份資料','已填欄位不會覆蓋舊資料（空白欄位視為不填）',`
+<div class="autofill-note">💡 房租、孝親費、保險已自動帶入上月金額，可自行修改</div>
+<div class="modal-sec">基本資訊</div>
+<div class="form-grid form-grid-2">
+  <div class="fg"><label>月份 *</label><input type="month" id="f_m" value="${nm}"></div>
+  <div class="fg"><label>ETF 當月市值</label><input type="number" id="f_etf" placeholder=""></div>
+</div>
+<div class="modal-sec">收入 & 儲蓄</div>
+<div class="form-grid form-grid-2">
+  <div class="fg"><label>工作收入</label><input type="number" id="f_w" placeholder=""></div>
+  <div class="fg"><label>投入儲蓄</label><input type="number" id="f_s" placeholder=""></div>
+</div>
+<div class="form-grid form-grid-2">
+  <div class="fg"><label>其他收入</label><input type="number" id="f_o" placeholder="0"></div>
+  <div class="fg"><label>其他收入備註</label><input type="text" id="f_on" placeholder="ex. 年終、獎金、股票"></div>
+</div>
+<div class="modal-sec">銀行帳戶餘額</div>
+<div class="form-grid form-grid-3">
+  <div class="fg"><label>彰銀</label><input type="number" id="f_b1" placeholder=""></div>
+  <div class="fg"><label>玉山</label><input type="number" id="f_b2" placeholder=""></div>
+  <div class="fg"><label>永豐</label><input type="number" id="f_b3" placeholder=""></div>
+</div>
+<div class="modal-sec">支出</div>
+<div class="form-grid form-grid-2">
+  <div class="fg"><label>待結清卡費</label><input type="number" id="f_cc" placeholder=""></div>
+  <div class="fg"><label>現金/轉帳支出</label><input type="number" id="f_ca" placeholder=""></div>
+</div>
+<div class="form-grid form-grid-3">
+  <div class="fg"><label>孝親費</label><input type="number" id="f_fi" value="${lastExp.filialPiety||''}"></div>
+  <div class="fg"><label>房租</label><input type="number" id="f_re" value="${lastExp.rent||''}"></div>
+  <div class="fg"><label>美甲/美容</label><input type="number" id="f_bt" placeholder="0"></div>
+</div>
+<div class="form-grid form-grid-2">
+  <div class="fg"><label>保險費</label><input type="number" id="f_in" value="${lastExp.insurance||''}"></div>
+  <div class="fg"><label>支出備註</label><input type="text" id="f_no" placeholder="特殊支出說明"></div>
+</div>
+<div class="modal-sec">投資</div>
+<div class="form-grid">
+  <div class="fg"><label>本月新增 ETF 投入金額</label><input type="number" id="f_ei" placeholder=""><div class="hint">填入後會加到上月投入金額累計</div></div>
+</div>
+`,()=>saveMonth());
+}
+
+function nv(id){const e=$(id);if(!e||e.value.trim()==='')return null;const v=parseFloat(e.value);return isNaN(v)?null:v}
+function sv(id){const e=$(id);return e?e.value.trim():null}
+
+function mergeArr(arr,month,updates){
+  const idx=arr.findIndex(r=>r.month===month);
+  if(idx<0){arr.push({month,...updates});arr.sort((a,b)=>a.month.localeCompare(b.month));}
+  else{Object.entries(updates).forEach(([k,v])=>{if(v!==null&&v!==undefined)arr[idx][k]=v})}
+}
+
+function saveMonth(){
+  const month=sv('f_m');if(!month){alert('請選擇月份');return}
+  const work=nv('f_w'),other=nv('f_o'),otherNote=sv('f_on'),sav=nv('f_s');
+  const b1=nv('f_b1'),b2=nv('f_b2'),b3=nv('f_b3');
+  const cc=nv('f_cc'),cash=nv('f_ca'),fil=nv('f_fi'),rent=nv('f_re'),bty=nv('f_bt'),ins=nv('f_in'),note=sv('f_no');
+  const etfMkt=nv('f_etf'),etfInv=nv('f_ei');
+
+  const existInc=D.income.find(r=>r.month===month)||{};
+  const newWork=work??existInc.workIncome??0;
+  const newSav=sav??existInc.savings??0;
+  // 用「上個月的累計儲蓄」當基準，而不是從頭加總（避免忽略歷史資料）
+  const prevMonthInc=[...D.income].filter(r=>r.month<month).sort((a,b)=>b.month.localeCompare(a.month))[0];
+  const prevCum=prevMonthInc?(prevMonthInc.cumSavings??0):0;
+  const savRate=newWork>0?newSav/newWork:0;
+  mergeArr(D.income,month,{workIncome:work,otherIncome:other,otherNote:otherNote||undefined,savings:sav,savingsRate:savRate||undefined,cumSavings:prevCum+newSav||undefined,changBank:b1,esuBank:b2,yongBank:b3});
+
+  const existExp=D.expenses.find(r=>r.month===month)||{};
+  const newCC=cc??existExp.creditCard??0,newCash=cash??existExp.cash??0;
+  const newFil=fil??existExp.filialPiety??0,newRent=rent??existExp.rent??0;
+  const newBty=bty??existExp.beauty??0,newIns=ins??existExp.insurance??0;
+  const totalExp=newCC+newCash+newFil+newRent+newBty+newIns;
+  mergeArr(D.expenses,month,{total:totalExp||undefined,creditCard:cc,cash,filialPiety:fil,rent,beauty:bty,insurance:ins,note:note||undefined});
+
+  if(etfMkt!==null||etfInv!==null){
+    const lastEtf=D.etf[D.etf.length-1]||{invested:0};
+    const existEtf=D.etf.find(r=>r.month===month);
+    const baseInv=existEtf?.invested||lastEtf.invested||0;
+    const inv=etfInv!==null?baseInv+etfInv:baseInv;
+    const mkt=etfMkt??existEtf?.market;
+    if(mkt!==undefined){
+      const pnl=mkt-inv;
+      mergeArr(D.etf,month,{invested:inv||undefined,market:etfMkt,pnl:pnl||undefined,pnlRate:inv>0?pnl/inv:undefined});
+    }
+  }
+
+  const existOv=D.overview.find(r=>r.month===month)||{};
+  const incR=D.income.find(r=>r.month===month)||{};
+  const expR=D.expenses.find(r=>r.month===month)||{};
+  const etfR=D.etf.find(r=>r.month===month)||{};
+  const bk=(incR.changBank||0)+(incR.esuBank||0)+(incR.yongBank||0);
+  const netA=(etfR.market||existOv.etfValue||0)+(bk||existOv.bankBalance||0)-(expR.creditCard||existOv.creditCard||0);
+  mergeArr(D.overview,month,{netAssets:netA||undefined,income:work,etfValue:etfMkt,bankBalance:bk||undefined,totalAssets:(etfR.market||existOv.etfValue||0)+(bk||existOv.bankBalance||0)||undefined,creditCard:cc,totalExpenses:totalExp||undefined});
+  save();closeModal();REND[_activeTab]();
+  const msg=D.overview.find(r=>r.month===month)?.netAssets;
+  alert(`✅ ${fmtM(month)} 資料已更新！${msg?' 資產淨額：'+money(msg):''}`);
+}
+
+// ── Goal CRUD ──
+function openGoalModal(id){
+  const g=id?D.goals.find(x=>x.id===id):null;
+  openModal(g?'編輯目標':'新增資產目標','',`
+<div class="form-grid">
+  <div class="fg"><label>目標金額（元）*</label><input type="number" id="gTarget" value="${g?.target||''}"></div>
+</div>
+<div class="form-grid form-grid-2" style="margin-top:10px">
+  <div class="fg"><label>截止月份</label><input type="month" id="gDeadline" value="${g?.deadline||''}"></div>
+  <div class="fg"><label>達成月份</label><input type="month" id="gAchieved" value="${g?.achievedMonth||''}"></div>
+</div>`,()=>{
+    const target=parseFloat($('gTarget')?.value);
+    if(!target||isNaN(target)){alert('請填寫目標金額');return}
+    const deadline=($('gDeadline')?.value||'').slice(0,7);
+    const ach=($('gAchieved')?.value||'').slice(0,7);
+    if(g){g.target=target;g.deadline=deadline;g.achieved=!!ach;g.achievedMonth=ach}
+    else{D.goals.push({id:uid(),target,deadline,achieved:!!ach,achievedMonth:ach})}
+    save();closeModal();renderGoals();
+  });
+}
+
+// ── Personal Goal CRUD ──  ← 最高防禦與錯誤捕捉版本
+function openPGModal(id){
+  const g=id?D.personalGoals.find(x=>x.id===id):null;
+  openModal(g?'編輯個人目標':'新增個人目標','',`
+<div class="form-grid">
+  <div class="fg"><label>目標名稱 *</label><input type="text" id="pgGoal" value="${g?.goal||''}" placeholder="ex. 去日本 🌸"></div>
+</div>
+<div class="form-grid form-grid-2" style="margin-top:10px">
+  <div class="fg"><label>預計完成時間</label><input type="text" id="pgDate" value="${g?.targetDate||''}" placeholder="ex. 2028年春天"></div>
+  <div class="fg"><label>實際完成日期</label><input type="date" id="pgActual" value="${g?.actualDate||''}"></div>
+</div>
+<div class="form-grid" style="margin-top:10px">
+  <div class="fg"><label>備註</label><input type="text" id="pgNote" value="${g?.note||''}" placeholder="任何說明"></div>
+</div>`,()=>{
+    try {
+      // 1. 安全地獲取所有輸入框的元素與值
+      const goalEl = document.getElementById('pgGoal');
+      const goal = goalEl ? goalEl.value.trim() : '';
+      if(!goal){ alert('請填寫目標名稱'); return; }
+
+      const targetDateEl = document.getElementById('pgDate');
+      const targetDate = targetDateEl ? targetDateEl.value.trim() : '';
+
+      const actualDateEl = document.getElementById('pgActual');
+      const actualDate = actualDateEl ? actualDateEl.value : '';
+
+      const noteEl = document.getElementById('pgNote');
+      const note = noteEl ? noteEl.value.trim() : '';
+
+      // 2. 安全地指派顏色
+      const fallbackColor = (typeof COLORS !== 'undefined' && COLORS.length > 0) 
+        ? COLORS[Math.max(0, D.personalGoals.length) % COLORS.length] 
+        : '#5690f5';
+      const color = (g && g.color) ? g.color : fallbackColor;
+
+      // 3. 更新或新增資料
+      if(g){
+        g.goal = goal;
+        g.targetDate = targetDate;
+        g.actualDate = actualDate;
+        g.note = note;
+      } else {
+        // uid() 在上面已經宣告過，這裡直接使用
+        D.personalGoals.push({id: uid(), goal, targetDate, actualDate, note, color});
+      }
+
+      // 4. 儲存、關閉視窗並重新渲染畫面
+      save();
+      closeModal();
+      renderGoals();
+
+    } catch (err) {
+      // 若有任何隱藏的錯誤，直接跳窗顯示，不再默默死當
+      alert('儲存時發生錯誤：\n' + err.message);
+      console.error('儲存個人目標失敗:', err);
+    }
+  });
+}
+
+// ── Dividend ──
+function openDivModal(){
+  const holdOpts=D.holdings.map(h=>`<option value="${h.code}">${h.code} ${h.name}（${nt(h.shares)}股）</option>`).join('');
+  openModal('新增股利紀錄','',`
+<div class="form-grid form-grid-2">
+  <div class="fg"><label>日期 *</label><input type="date" id="dDate"></div>
+  <div class="fg"><label>股票 *</label><select id="dCode">${holdOpts}</select></div>
+</div>
+<div class="form-grid form-grid-2" style="margin-top:10px">
+  <div class="fg"><label>每股股利（元）*</label><input type="number" id="dDps" step="0.01" placeholder="0.00" oninput="calcDiv()"></div>
+  <div class="fg"><label>持有股數</label><input type="number" id="dShares" placeholder="自動帶入" oninput="calcDiv()"></div>
+</div>
+<div id="dCalcResult" style="margin-top:8px;padding:10px;background:var(--card3);border-radius:8px;font-size:13px;color:var(--green)"></div>
+<div class="form-grid" style="margin-top:10px">
+  <div class="fg"><label>備註</label><input type="text" id="dNote" placeholder="ex. 2025年中期股利"></div>
+</div>`,()=>{
+    const date=$('dDate')?.value,code=$('dCode')?.value;
+    const dps=parseFloat($('dDps')?.value);
+    if(!date||!code||!dps){alert('請填寫必填欄位');return}
+    const h=D.holdings.find(x=>x.code===code);
+    const shares=parseFloat($('dShares')?.value)||h?.shares||0;
+    const total=Math.round(dps*shares);
+    D.dividends.push({id:uid(),date,code,name:h?.name||code,divPerShare:dps,shares,totalDividend:total,note:$('dNote')?.value.trim()||''});
+    D.dividends.sort((a,b)=>b.date.localeCompare(a.date));
+    save();closeModal();renderDividend();
+  });
+  setTimeout(()=>{const el=$('dCode');if(!el)return;const fill=()=>{const h=D.holdings.find(x=>x.code===el.value);if(h)$('dShares').value=h.shares;calcDiv()};el.onchange=fill;fill();},50);
+}
+function calcDiv(){
+  const dps=parseFloat($('dDps')?.value)||0,sh=parseFloat($('dShares')?.value)||0;
+  const r=$('dCalcResult');if(r)r.textContent=dps&&sh?`合計股利：${money(Math.round(dps*sh))}`:'';
+}
+
+// ── Transaction ──
+function openTxModal(){
+  openModal('新增交易紀錄','',`
+<div class="form-grid form-grid-2">
+  <div class="fg"><label>成交日期 *</label><input type="date" id="tx_d"></div>
+  <div class="fg"><label>交易別</label><select id="tx_t"><option value="買進">買進</option><option value="賣出">賣出</option></select></div>
+</div>
+<div class="form-grid form-grid-2" style="margin-top:10px">
+  <div class="fg"><label>證券名稱 *</label><input type="text" id="tx_n" placeholder="ex. 台灣50"></div>
+  <div class="fg"><label>股數</label><input type="number" id="tx_s" placeholder="0"></div>
+</div>
+<div class="form-grid form-grid-3" style="margin-top:10px">
+  <div class="fg"><label>成交單價</label><input type="number" id="tx_p" step="0.01" placeholder="0.00"></div>
+  <div class="fg"><label>成交金額</label><input type="number" id="tx_a" placeholder="0"></div>
+  <div class="fg"><label>手續費</label><input type="number" id="tx_f" placeholder="0"></div>
+</div>`,()=>{
+    const date=$('tx_d')?.value,name=$('tx_n')?.value.trim();
+    if(!date||!name){alert('請填寫日期和證券名稱');return}
+    D.transactions.unshift({month:date.slice(0,7),date,type:$('tx_t')?.value||'買進',name,shares:parseFloat($('tx_s')?.value)||0,price:parseFloat($('tx_p')?.value)||0,amount:parseFloat($('tx_a')?.value)||0,fee:parseFloat($('tx_f')?.value)||0});
+    save();closeModal();renderInvest();
+  });
+}
+
+// ═══════════════════════════════════════════
+// HOLDINGS CRUD
+// ═══════════════════════════════════════════
+function openHoldingModal(code){
+  const h=code?D.holdings.find(x=>x.code===code):null;
+  openModal(h?`編輯持倉（${code}）`:'新增持股','',`
+<div class="form-grid form-grid-2">
+  <div class="fg"><label>股票代號 *</label><input type="text" id="hCode" value="${h?.code||''}" placeholder="ex. 0050" ${h?'readonly style="opacity:.65"':''}></div>
+  <div class="fg"><label>股票名稱 *</label><input type="text" id="hName" value="${h?.name||''}" placeholder="ex. 元大台灣50"></div>
+</div>
+<div class="form-grid form-grid-2" style="margin-top:10px">
+  <div class="fg"><label>持有股數</label><input type="number" id="hShares" value="${h?.shares||''}" placeholder="0"></div>
+  <div class="fg"><label>平均成本（元）</label><input type="number" id="hAvg" step="0.01" value="${h?.avgCost||''}" placeholder="0.00"></div>
+</div>
+<div class="form-grid form-grid-2" style="margin-top:10px">
+  <div class="fg"><label>參考市值（元）</label><input type="number" id="hMkt" value="${h?.market||''}" placeholder="0"></div>
+  <div class="fg"><label>總投資成本（元）</label><input type="number" id="hCost" value="${h?.totalCost||''}" placeholder="自動計算"><div class="hint">空白則自動 = 股數 × 均成本</div></div>
+</div>`,()=>{
+    const code2=(($('hCode')?.value)||'').trim().toUpperCase();
+    const name=($('hName')?.value||'').trim();
+    if(!code2||!name){alert('請填寫股票代號與名稱');return}
+    const shares=parseFloat($('hShares')?.value)||0;
+    const avgCost=parseFloat($('hAvg')?.value)||0;
+    const market=parseFloat($('hMkt')?.value)||0;
+    const totalCost=parseFloat($('hCost')?.value)||Math.round(shares*avgCost);
+    const pnl=market-totalCost,rate=totalCost>0?pnl/totalCost:0;
+    if(h){h.name=name;h.shares=shares;h.avgCost=avgCost;h.totalCost=totalCost;h.market=market;h.pnl=pnl;h.rate=rate;}
+    else{
+      if(D.holdings.find(x=>x.code===code2)){alert('此代號已存在，請直接編輯');return}
+      D.holdings.push({code:code2,name,shares,avgCost,totalCost,market,pnl,rate});
+    }
+    save();closeModal();renderInvest();
+  });
+}
+
+function delHolding(code){
+  if(!confirm(`確定刪除 ${code} 的持倉紀錄？`))return;
+  D.holdings=D.holdings.filter(h=>h.code!==code);
+  save();renderInvest();
+}
+
+// ═══════════════════════════════════════════
+// STATEMENT UPLOAD — 圖片參照 + 可編輯表格（取代 OCR）
+// ═══════════════════════════════════════════
+// ═══════════════════════════════════════════
+// STATEMENT UPLOAD — 改為「文字解析」與「手動對照」
+// ═══════════════════════════════════════════
+function openStatementUpload(){
+  const holdingRows=D.holdings.map((h,i)=>`
+    <tr>
+      <td style="padding:5px 8px"><span class="tag">${h.code}</span></td>
+      <td style="padding:5px 8px;color:var(--text2)">${h.name}</td>
+      <td style="padding:4px 5px"><input type="number" id="su_sh_${i}" value="${h.shares}" style="width:80px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 7px;color:var(--text);font-size:12px;text-align:right;outline:none"></td>
+      <td style="padding:4px 5px"><input type="number" id="su_ac_${i}" value="${h.avgCost}" step="0.01" style="width:72px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:5px 7px;color:var(--text);font-size:12px;text-align:right;outline:none"></td>
+      <td style="padding:4px 5px"><input type="number" id="su_mk_${i}" placeholder="${h.market}" style="width:90px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:5px 7px;color:var(--text);font-size:12px;text-align:right;outline:none"></td>
+    </tr>`).join('');
+  openModal('更新持倉 / 對帳單','純網頁無法直接辨識圖片，請改用「貼上明細文字」讓系統嘗試抓取，或直接手動更新。',`
+<div class="fg" style="margin-bottom:10px">
+  <label style="display:block;margin-bottom:5px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px">方法 1：貼上券商 App 的庫存文字</label>
+  <textarea id="stmtText" rows="3" placeholder="請將券商 App 的庫存文字全選複製，貼在這裡..." style="width:100%;font-size:12px;padding:8px;border-radius:6px;background:var(--bg);color:var(--text);border:1px solid var(--border);outline:none"></textarea>
+  <button class="btn btn-ghost btn-sm" onclick="parseStatementText()" style="margin-top:6px;width:100%">🔍 自動抓取文字內的數值填入下方表格</button>
+</div>
+<div style="font-size:11.5px;color:var(--muted);margin-bottom:8px">方法 2：手動更新數值（對照您的 App，空白欄位將保留原值）：</div>
+<div style="overflow-x:auto;margin-bottom:10px">
+<table style="width:100%;font-size:12px;border-collapse:collapse">
+  <thead><tr style="color:var(--muted);font-size:10.5px;background:rgba(0,0,0,.15)">
+    <th style="padding:6px 8px;text-align:left;font-weight:500">代號</th>
+    <th style="padding:6px 8px;text-align:left;font-weight:500">名稱</th>
+    <th style="padding:6px 5px;font-weight:500;text-align:center">庫存股數</th>
+    <th style="padding:6px 5px;font-weight:500;text-align:center">平均成本</th>
+    <th style="padding:6px 5px;font-weight:500;text-align:center">市值 ★</th>
+  </tr></thead>
+  <tbody>${holdingRows}</tbody>
+</table></div>
+`,()=>saveStatementData());
+}
+
+function parseStatementText() {
+  const txt = $('stmtText').value.replace(/,/g, ''); // 移除千分位逗號
+  if (!txt) { alert('請先貼上文字'); return; }
+  let foundCount = 0;
+  D.holdings.forEach((h, i) => {
+    // 尋找股票代號，並抓取代號後面的連續數字
+    const regex = new RegExp(h.code + '[^0-9]*([0-9]+\\.?[0-9]*)[^0-9]*([0-9]+\\.?[0-9]*)[^0-9]*([0-9]+\\.?[0-9]*)', 'i');
+    const match = txt.match(regex);
+    if (match) {
+      const nums = [parseFloat(match[1]), parseFloat(match[2]), parseFloat(match[3])].filter(n => !isNaN(n));
+      if (nums.length > 0) {
+        const maxNum = Math.max(...nums); // 假設券商明細中，最大的數字通常是「總市值」
+        if (maxNum > h.market * 0.3) {
+          $('su_mk_'+i).value = maxNum;
+          foundCount++;
+        }
+      }
+    }
+  });
+  if(foundCount > 0) alert('已嘗試解析 ' + foundCount + ' 筆市值，請確認下方表格是否正確再按儲存！');
+  else alert('無法識別對應數字。各家券商格式差異較大，若抓取失敗請手動填寫下方表格。');
+}
+
+function saveStatementData(){
+  D.holdings.forEach((h,i)=>{
+    const shEl=document.getElementById('su_sh_'+i);
+    const acEl=document.getElementById('su_ac_'+i);
+    const mkEl=document.getElementById('su_mk_'+i);
+    if(shEl&&shEl.value!=='')h.shares=parseFloat(shEl.value)||h.shares;
+    if(acEl&&acEl.value!=='')h.avgCost=parseFloat(acEl.value)||h.avgCost;
+    if(mkEl&&mkEl.value!==''){
+      h.market=parseFloat(mkEl.value);
+      h.totalCost=Math.round(h.shares*h.avgCost);
+      h.pnl=h.market-h.totalCost;
+      h.rate=h.totalCost>0?h.pnl/h.totalCost:0;
+    }
+  });
+  save();closeModal();renderInvest();
+  alert('✅ 持倉資料已更新！');
+}
+
+// ═══════════════════════════════════════════
+// 匯出 / 匯入
+// ═══════════════════════════════════════════
+function exportData(){
+  const now=new Date();
+  const ts=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  const json=JSON.stringify(D,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`資產管理_備份_${ts}.json`;
+  document.body.appendChild(a);a.click();
+  
