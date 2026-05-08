@@ -114,7 +114,58 @@ tr:hover td{background:rgba(255,255,255,.025)}
 .autofill-note{font-size:11px;color:var(--teal);background:rgba(42,204,224,.08);border-radius:6px;padding:5px 10px;margin-bottom:8px}
 .modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
 @media(max-width:900px){.col-21,.col-12,.col-3,.col-2{grid-template-columns:1fr}.pg-grid{grid-template-columns:1fr 1fr}.calc-row{grid-template-columns:1fr}}
-@media(max-width:580px){.kpi-grid{grid-template-columns:1fr 1fr}.content{padding:12px}.hdr{padding:0 12px}.pg-grid{grid-template-columns:1fr}}
+@media(max-width:580px){.kpi-grid{grid-template-columns:1fr 1fr}.content{padding:12px}.hdr{padding:0 12px}.pg-grid{grid-template-columns:1fr}.kpi-val{font-size:17px}.chart-card{overflow-x:auto;-webkit-overflow-scrolling:touch}.chart-wrap{min-width:480px}}
+
+/* ── 期間篩選器 ── */
+.period-sel{display:flex;align-items:center;gap:6px;margin-bottom:14px;padding:9px 14px;background:var(--card);border:1px solid var(--border);border-radius:10px;flex-wrap:wrap}
+.period-sel-lbl{font-size:11px;color:var(--muted);margin-right:2px}
+.period-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:all .15s}
+.period-btn:hover{background:var(--card3);color:var(--text)}
+.period-btn.active{background:rgba(86,144,245,.18);color:var(--blue2);border-color:rgba(86,144,245,.38)}
+
+/* ── 設定抽屜 ── */
+.settings-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;transition:opacity .2s}
+.settings-overlay.open{display:block}
+.settings-drawer{position:fixed;left:-300px;top:0;bottom:0;width:280px;background:var(--card2);border-right:1px solid var(--border2);z-index:301;transition:left .25s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding:0;overflow-y:auto}
+.settings-drawer.open{left:0}
+.settings-hdr{padding:20px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.settings-section{padding:16px 20px;border-bottom:1px solid var(--border)}
+.settings-section-title{font-size:10px;font-weight:600;color:var(--muted2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.settings-btn{display:flex;align-items:center;gap:9px;width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:13px;cursor:pointer;transition:all .15s;margin-bottom:8px;text-align:left}
+.settings-btn:hover{background:var(--card3);border-color:var(--border2)}
+.settings-btn:last-child{margin-bottom:0}
+.settings-btn.danger{color:var(--red);border-color:rgba(224,90,90,.25)}
+.settings-btn.danger:hover{background:rgba(224,90,90,.12)}
+
+/* ── Tab 跳色 (卡片 border 微調) ── */
+.content[data-theme="income"] .chart-card,.content[data-theme="income"] .tbl-card,.content[data-theme="income"] .kpi,.content[data-theme="income"] .calc-card{border-color:rgba(56,190,122,.3)}
+.content[data-theme="expenses"] .chart-card,.content[data-theme="expenses"] .tbl-card,.content[data-theme="expenses"] .kpi{border-color:rgba(240,168,48,.3)}
+.content[data-theme="invest"] .chart-card,.content[data-theme="invest"] .tbl-card,.content[data-theme="invest"] .kpi{border-color:rgba(152,128,232,.3)}
+.content[data-theme="dividend"] .chart-card,.content[data-theme="dividend"] .tbl-card,.content[data-theme="dividend"] .kpi,.content[data-theme="dividend"] .pay-card{border-color:rgba(42,204,224,.3)}
+.content[data-theme="goals"] .chart-card,.content[data-theme="goals"] .tbl-card,.content[data-theme="goals"] .kpi,.content[data-theme="goals"] .calc-card,.content[data-theme="goals"] .pg-card{border-color:rgba(240,168,48,.25)}
+.content[data-theme="annual"] .chart-card,.content[data-theme="annual"] .tbl-card,.content[data-theme="annual"] .annual-card{border-color:rgba(86,144,245,.28)}
+
+/* ── 股利年曆 ── */
+.div-cal{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.div-cal-month{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 9px;min-height:72px}
+.div-cal-month.has-div{background:rgba(240,168,48,.08);border-color:rgba(240,168,48,.35)}
+.div-cal-month.is-now{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+.div-cal-lbl{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;display:flex;align-items:center;gap:4px}
+.div-cal-month.is-now .div-cal-lbl{color:var(--blue2)}
+.div-cal-chip{font-size:10px;background:rgba(240,168,48,.2);color:var(--amber);border-radius:4px;padding:2px 5px;margin-bottom:3px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:580px){.div-cal{grid-template-columns:repeat(3,1fr)}}
+
+/* ── 個人目標完成 ── */
+.pg-card-done{background:linear-gradient(135deg,rgba(56,190,122,.13),rgba(86,144,245,.07))!important;border-color:rgba(56,190,122,.55)!important;position:relative;overflow:hidden}
+.pg-card-done-badge{position:absolute;top:10px;right:12px;font-size:26px;opacity:.22;line-height:1}
+.pg-done-stamp{display:inline-flex;align-items:center;gap:4px;background:rgba(56,190,122,.18);color:var(--green);border-radius:6px;padding:3px 9px;font-size:11px;font-weight:600;margin-bottom:8px}
+
+/* ── 提醒橫幅 ── */
+.reminder-banner{background:rgba(240,168,48,.1);border:1px solid rgba(240,168,48,.35);border-radius:10px;padding:12px 16px 12px;margin-bottom:18px;position:relative}
+.reminder-close{position:absolute;right:10px;top:8px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px}
+.reminder-close:hover{color:var(--text)}
+.reminder-title{font-size:11.5px;font-weight:700;color:var(--amber);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.reminder-item{font-size:12.5px;color:var(--text);margin-bottom:3px;display:flex;align-items:flex-start;gap:6px;line-height:1.4}
 </style>
 </head>
 <body>
@@ -123,9 +174,8 @@ tr:hover td{background:rgba(255,255,255,.025)}
   <div class="hdr-logo">💰 資產管理</div>
   <div class="hdr-right">
     <span class="hdr-date" id="hdrDate"></span>
-    <button class="btn btn-ghost btn-sm" onclick="exportData()" title="匯出所有資料為 JSON 檔">📤 匯出</button>
-    <label class="btn btn-ghost btn-sm" style="cursor:pointer" title="從 JSON 檔匯入資料">📥 匯入<input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)"></label>
-    <button class="btn btn-ghost btn-sm" onclick="openMonthModal()">＋ 新增 / 更新月份</button>
+    <button class="btn btn-ghost btn-sm" onclick="openMonthModal()">＋ 新增月份</button>
+    <button class="btn btn-ghost btn-sm" onclick="openSettings()" title="設定、匯入匯出">⚙️</button>
   </div>
 </div>
 
@@ -149,6 +199,29 @@ tr:hover td{background:rgba(255,255,255,.025)}
   <div class="tab-pane" id="tab-annual"></div>
 </div>
 
+<!-- 設定抽屜 -->
+<div class="settings-overlay" id="settingsOverlay" onclick="closeSettings()"></div>
+<div class="settings-drawer" id="settingsDrawer">
+  <div class="settings-hdr">
+    <span style="font-size:15px;font-weight:700;color:var(--text2)">⚙️ 設定</span>
+    <button onclick="closeSettings()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1">✕</button>
+  </div>
+  <div class="settings-section">
+    <div class="settings-section-title">資料同步</div>
+    <button class="settings-btn" onclick="exportData();closeSettings()">📤 匯出備份（JSON）</button>
+    <label class="settings-btn" style="cursor:pointer">📥 匯入備份<input type="file" accept=".json" style="display:none" onchange="importData(this)"></label>
+  </div>
+  <div class="settings-section">
+    <div class="settings-section-title">月度資料</div>
+    <button class="settings-btn" onclick="closeSettings();openMonthModal()">📝 新增 / 更新月份資料</button>
+  </div>
+  <div class="settings-section">
+    <div class="settings-section-title">危險操作</div>
+    <button class="settings-btn danger" onclick="if(confirm('確定要清除所有資料並重置嗎？此操作無法復原！')){try{localStorage.removeItem('assetMgmt_v3')}catch(e){}location.reload()}">🗑 清除所有資料</button>
+  </div>
+  <div style="padding:16px 20px;margin-top:auto;font-size:11px;color:var(--muted2)">資料儲存於本機瀏覽器<br>定期匯出備份以防資料遺失</div>
+</div>
+
 <div class="overlay" id="overlay">
   <div class="modal">
     <div class="modal-title" id="mTitle"></div>
@@ -162,7 +235,6 @@ tr:hover td{background:rgba(255,255,255,.025)}
 // ═══════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════
-// GitHub Pages 版本：SEED 為空，資料請透過「📥 匯入」載入
 const SEED={
   overview:[],income:[],expenses:[],etf:[],
   holdings:[],transactions:[],goals:[],
@@ -188,10 +260,15 @@ const nt=(n,d=0)=>n==null?'—':(Math.round(n*Math.pow(10,d))/Math.pow(10,d)).to
 const pct=n=>n==null?'—':((n*100).toFixed(1)+'%');
 const money=n=>n==null?'—':'$'+nt(n);
 const fmtM=m=>m?m.replace('-','年')+'月':'—';
+const fmtMShort=m=>{if(!m)return'—';const[y,mo]=m.split('-');const n=parseInt(mo);return n===1?"'"+y.slice(2)+"/"+n+"月":n+"月";};
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const uid=()=>Date.now()+Math.floor(Math.random()*1000);
 const save=()=>{try{localStorage.setItem('assetMgmt_v3',JSON.stringify(D));}catch(e){console.warn('⚠️ 無法寫入 localStorage',e);}};
 const COLORS=['#5690f5','#38be7a','#f0a830','#9880e8','#e05a5a','#2acce0'];
+let chartPeriod=12;
+const sliceChart=arr=>chartPeriod>=999?arr:arr.slice(-Math.min(chartPeriod,arr.length));
+function periodSelHTML(){const p=chartPeriod;return'<div class="period-sel"><span class="period-sel-lbl">顯示期間：</span><button class="period-btn'+(p===6?' active':'')+'" onclick="setPeriod(6,this)">6個月</button><button class="period-btn'+(p===12?' active':'')+'" onclick="setPeriod(12,this)">12個月</button><button class="period-btn'+(p>=999?' active':'')+'" onclick="setPeriod(999,this)">全部</button></div>';}
+function setPeriod(n,btn){chartPeriod=n;document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');const t=document.querySelector('.tab.active');if(t&&REND[t.dataset.tab])REND[t.dataset.tab]();}
 
 let _charts={};
 function mkChart(id,cfg){if(_charts[id])_charts[id].destroy();_charts[id]=new Chart($(id),cfg)}
@@ -205,22 +282,20 @@ const PAL=['#5690f5','#2acce0','#38be7a','#f0a830','#9880e8','#e05a5a','#f07840'
 // ═══════════════════════════════════════════
 // OVERVIEW
 // ═══════════════════════════════════════════
+
+// ─── 歡迎畫面（首次使用 / 無資料時）───────────────────────
 function showWelcome(){
-  document.querySelectorAll('.tab-pane').forEach(p=>p.innerHTML='');
   $('tab-overview').innerHTML=`
-<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px 20px">
-  <div style="font-size:56px;margin-bottom:20px">💰</div>
-  <div style="font-size:24px;font-weight:700;color:var(--text2);margin-bottom:10px">歡迎使用資產管理 App</div>
-  <div style="font-size:14px;color:var(--muted);margin-bottom:32px;max-width:360px;line-height:1.7">
-    請先從電腦版點「📤 匯出」下載備份 JSON，<br>再點下方按鈕匯入，即可在手機 / 任何裝置使用。
-  </div>
-  <label style="display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;padding:14px 28px;border-radius:10px;cursor:pointer;font-size:15px;font-weight:600;margin-bottom:16px">
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:20px;text-align:center;padding:40px 20px">
+  <div style="font-size:56px;line-height:1">💰</div>
+  <div style="font-size:22px;font-weight:700;color:var(--text2)">歡迎使用資產管理 App</div>
+  <div style="font-size:14px;color:var(--muted);max-width:380px;line-height:1.7">首次使用請匯入您的備份資料，或從設定 ⚙️ 開始新增月份資料</div>
+  <label style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:var(--blue);color:#fff;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none">
     📥 匯入備份資料
     <input type="file" accept=".json" style="display:none" onchange="importData(this)">
   </label>
-  <div style="font-size:12px;color:var(--muted2)">或點右上角「＋ 新增 / 更新月份」從頭開始建立</div>
+  <div style="font-size:11.5px;color:var(--muted2)">資料只存在您的瀏覽器本機，不會上傳至任何伺服器</div>
 </div>`;
-  $('tab-overview').classList.add('active');
 }
 
 function renderOverview(){
@@ -229,6 +304,7 @@ function renderOverview(){
   const nd=cur.netAssets-prev.netAssets,ndp=prev.netAssets?nd/prev.netAssets:0;
   const etfP=cur.totalAssets?cur.etfValue/cur.totalAssets:0;
   $('tab-overview').innerHTML=`
+${periodSelHTML()}
 <div class="kpi-grid">
   <div class="kpi"><div class="kpi-lbl">資產淨額（最新）</div><div class="kpi-val" style="color:var(--blue2)">${money(cur.netAssets)}</div><div class="kpi-sub">${nd>=0?`<span class="pos">▲ ${money(nd)}</span>`:`<span class="neg">▼ ${money(Math.abs(nd))}</span>`}&nbsp;${ndp>=0?`<span class="pos">${pct(ndp)}</span>`:`<span class="neg">${pct(ndp)}</span>`} vs上月</div><div class="kpi-bar"><div class="kpi-fill" style="width:${clamp(cur.netAssets/1200000*100,5,100)}%;background:var(--blue)"></div></div></div>
   <div class="kpi"><div class="kpi-lbl">總資產</div><div class="kpi-val">${money(cur.totalAssets)}</div><div class="kpi-sub"><span class="neu">${fmtM(cur.month)} 更新</span></div><div class="kpi-bar"><div class="kpi-fill" style="width:${clamp(cur.totalAssets/1200000*100,5,100)}%;background:var(--teal)"></div></div></div>
@@ -249,15 +325,15 @@ function renderOverview(){
     <tbody>${[...ov].reverse().map((r,i,a)=>{const p=a[i+1];const d=p?r.netAssets-p.netAssets:null;return`<tr><td>${fmtM(r.month)}</td><td>${money(r.netAssets)}</td><td>${d!=null?(d>=0?`<span class="pos">▲${money(d)}</span>`:`<span class="neg">▼${money(Math.abs(d))}</span>`):'—'}</td><td>${money(r.totalAssets)}</td><td>${money(r.etfValue)}</td><td>${money(r.bankBalance)}</td><td class="neg">${money(r.creditCard)}</td><td class="neg">${money(r.totalExpenses)}</td></tr>`}).join('')}</tbody>
   </table></div>
 </div>`;
-  const lbl=ov.map(r=>fmtM(r.month));
+  const ovC=sliceChart(ov);const lbl=ovC.map(r=>fmtMShort(r.month));
   mkChart('c_net',{type:'line',data:{labels:lbl,datasets:[
-    {label:'資產淨額',data:ov.map(r=>r.netAssets),borderColor:'#5690f5',backgroundColor:'rgba(86,144,245,.07)',fill:true,tension:.35,pointRadius:4,pointHoverRadius:6,borderWidth:2},
-    {label:'總資產',data:ov.map(r=>r.totalAssets),borderColor:'#2acce0',backgroundColor:'rgba(42,204,224,.04)',fill:true,tension:.35,pointRadius:3,borderDash:[4,3],borderWidth:1.5},
+    {label:'資產淨額',data:ovC.map(r=>r.netAssets),borderColor:'#5690f5',backgroundColor:'rgba(86,144,245,.07)',fill:true,tension:.35,pointRadius:4,pointHoverRadius:6,borderWidth:2},
+    {label:'總資產',data:ovC.map(r=>r.totalAssets),borderColor:'#2acce0',backgroundColor:'rgba(42,204,224,.04)',fill:true,tension:.35,pointRadius:3,borderDash:[4,3],borderWidth:1.5},
   ]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{color:'rgba(255,255,255,.03)'}}}}});
   mkChart('c_alloc',{type:'doughnut',data:{labels:['ETF市值','銀行帳戶'],datasets:[{data:[cur.etfValue,cur.bankBalance],backgroundColor:['rgba(152,128,232,.8)','rgba(56,190,122,.75)'],borderColor:['#9880e8','#38be7a'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{tooltip:{callbacks:{label:c=>` ${c.label}: ${money(c.raw)} (${pct(c.raw/cur.totalAssets)})`}}}}});
   mkChart('c_io',{type:'bar',data:{labels:lbl,datasets:[
-    {label:'工作收入',data:ov.map(r=>r.income),backgroundColor:'rgba(56,190,122,.7)',borderRadius:4},
-    {label:'總支出',data:ov.map(r=>r.totalExpenses),backgroundColor:'rgba(224,90,90,.6)',borderRadius:4},
+    {label:'工作收入',data:ovC.map(r=>r.income),backgroundColor:'rgba(56,190,122,.7)',borderRadius:4},
+    {label:'總支出',data:ovC.map(r=>r.totalExpenses),backgroundColor:'rgba(224,90,90,.6)',borderRadius:4},
   ]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
 }
 
@@ -268,6 +344,7 @@ function renderIncome(){
   const inc=D.income,cur=inc[inc.length-1],prev=inc[inc.length-2]||cur;
   const avgR=inc.filter(r=>r.savingsRate>0).reduce((s,r)=>s+r.savingsRate,0)/Math.max(1,inc.filter(r=>r.savingsRate>0).length);
   $('tab-income').innerHTML=`
+${periodSelHTML()}
 <div class="kpi-grid">
   <div class="kpi"><div class="kpi-lbl">本月工作收入</div><div class="kpi-val" style="color:var(--green)">${money(cur.workIncome)}</div><div class="kpi-sub">${cur.workIncome>=prev.workIncome?`<span class="pos">▲ ${money(cur.workIncome-prev.workIncome)}</span>`:`<span class="neg">▼ ${money(Math.abs(cur.workIncome-prev.workIncome))}</span>`} vs上月</div></div>
   <div class="kpi"><div class="kpi-lbl">其他收入（本月）</div><div class="kpi-val">${money(cur.otherIncome)}</div><div class="kpi-sub"><span class="neu">${cur.otherNote||'—'}</span></div></div>
@@ -289,11 +366,11 @@ function renderIncome(){
     <tbody>${[...inc].reverse().map(r=>`<tr><td>${fmtM(r.month)}</td><td class="pos">${money(r.workIncome)}</td><td>${r.otherIncome>0?`<span class="pos">${money(r.otherIncome)}</span>`:'—'}</td><td class="note-cell">${r.otherNote||'—'}</td><td>${money(r.savings)}</td><td>${r.savingsRate>0?`<span class="pos">${pct(r.savingsRate)}</span>`:'—'}</td><td>${money(r.cumSavings)}</td><td>${r.changBank>0?money(r.changBank):'—'}</td><td>${r.esuBank>0?money(r.esuBank):'—'}</td><td>${r.yongBank>0?money(r.yongBank):'—'}</td></tr>`).join('')}</tbody>
   </table></div>
 </div>`;
-  const lbl=inc.map(r=>fmtM(r.month));
-  mkChart('c_incb',{type:'bar',data:{labels:lbl,datasets:[{label:'工作收入',data:inc.map(r=>r.workIncome),backgroundColor:'rgba(56,190,122,.72)',borderRadius:4},{label:'其他收入',data:inc.map(r=>r.otherIncome),backgroundColor:'rgba(42,204,224,.65)',borderRadius:4}]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}}}}});
-  mkChart('c_cum',{type:'line',data:{labels:lbl,datasets:[{label:'累計儲蓄',data:inc.map(r=>r.cumSavings),borderColor:'#f0a830',backgroundColor:'rgba(240,168,48,.07)',fill:true,tension:.35,pointRadius:4,yAxisID:'y'},{label:'儲蓄率(%)',data:inc.map(r=>r.savingsRate*100),borderColor:'#9880e8',tension:.35,pointRadius:4,yAxisID:'y2',borderDash:[3,2]}]},options:{responsive:true,scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},y2:{position:'right',ticks:{callback:v=>v.toFixed(0)+'%'},grid:{display:false}},x:{grid:{display:false}}}}});
+  const incC=sliceChart(inc);const lbl=incC.map(r=>fmtMShort(r.month));
+  mkChart('c_incb',{type:'bar',data:{labels:lbl,datasets:[{label:'工作收入',data:incC.map(r=>r.workIncome),backgroundColor:'rgba(56,190,122,.72)',borderRadius:4},{label:'其他收入',data:incC.map(r=>r.otherIncome),backgroundColor:'rgba(42,204,224,.65)',borderRadius:4}]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}}}}});
+  mkChart('c_cum',{type:'line',data:{labels:lbl,datasets:[{label:'累計儲蓄',data:incC.map(r=>r.cumSavings),borderColor:'#f0a830',backgroundColor:'rgba(240,168,48,.07)',fill:true,tension:.35,pointRadius:4,yAxisID:'y'},{label:'儲蓄率(%)',data:incC.map(r=>r.savingsRate*100),borderColor:'#9880e8',tension:.35,pointRadius:4,yAxisID:'y2',borderDash:[3,2]}]},options:{responsive:true,scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},y2:{position:'right',ticks:{callback:v=>v.toFixed(0)+'%'},grid:{display:false}},x:{grid:{display:false}}}}});
   mkChart('c_banks',{type:'doughnut',data:{labels:['彰銀','玉山','永豐'],datasets:[{data:[cur.changBank||0,cur.esuBank||0,cur.yongBank||0],backgroundColor:['rgba(86,144,245,.8)','rgba(42,204,224,.8)','rgba(56,190,122,.8)'],borderColor:['#5690f5','#2acce0','#38be7a'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{tooltip:{callbacks:{label:c=>` ${c.label}: ${money(c.raw)}`}}}}});
-  mkChart('c_bktrend',{type:'line',data:{labels:lbl,datasets:[{label:'彰銀',data:inc.map(r=>r.changBank||0),borderColor:'#5690f5',tension:.3,pointRadius:3},{label:'玉山',data:inc.map(r=>r.esuBank||0),borderColor:'#2acce0',tension:.3,pointRadius:3},{label:'永豐',data:inc.map(r=>r.yongBank||0),borderColor:'#38be7a',tension:.3,pointRadius:3}]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
+  mkChart('c_bktrend',{type:'line',data:{labels:lbl,datasets:[{label:'彰銀',data:incC.map(r=>r.changBank||0),borderColor:'#5690f5',tension:.3,pointRadius:3},{label:'玉山',data:incC.map(r=>r.esuBank||0),borderColor:'#2acce0',tension:.3,pointRadius:3},{label:'永豐',data:incC.map(r=>r.yongBank||0),borderColor:'#38be7a',tension:.3,pointRadius:3}]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
 }
 
 // ═══════════════════════════════════════════
@@ -304,6 +381,7 @@ function renderExpenses(){
   const fixed=cur.filialPiety+cur.rent+(cur.insurance||0);
   const avg=exp.reduce((s,r)=>s+r.total,0)/exp.length;
   $('tab-expenses').innerHTML=`
+${periodSelHTML()}
 <div class="kpi-grid">
   <div class="kpi"><div class="kpi-lbl">本月總支出</div><div class="kpi-val" style="color:var(--amber)">${money(cur.total)}</div><div class="kpi-sub">${cur.total-prev.total>=0?`<span class="neg">▲ ${money(Math.abs(cur.total-prev.total))}</span>`:`<span class="pos">▼ ${money(Math.abs(cur.total-prev.total))}</span>`} vs上月</div></div>
   <div class="kpi"><div class="kpi-lbl">卡費（待結清）</div><div class="kpi-val">${money(cur.creditCard)}</div><div class="kpi-sub"><span class="neu">佔 ${pct(cur.creditCard/cur.total)}</span></div></div>
@@ -325,15 +403,15 @@ function renderExpenses(){
   </table></div>
 </div>`;
   mkChart('c_expd',{type:'doughnut',data:{labels:['卡費','現金/轉帳','孝親費','房租','美甲美容','保險'],datasets:[{data:[cur.creditCard,cur.cash,cur.filialPiety,cur.rent,cur.beauty,cur.insurance],backgroundColor:PAL.map(c=>c+'bb'),borderColor:PAL,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{tooltip:{callbacks:{label:c=>` ${c.label}: ${money(c.raw)} (${pct(c.raw/cur.total)})`}}}}});
-  const lbl=exp.map(r=>fmtM(r.month));
-  mkChart('c_exptr',{type:'line',data:{labels:lbl,datasets:[{label:'總支出',data:exp.map(r=>r.total),borderColor:'#f0a830',backgroundColor:'rgba(240,168,48,.07)',fill:true,tension:.35,pointRadius:4}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
+  const expC=sliceChart(exp);const lbl=expC.map(r=>fmtMShort(r.month));
+  mkChart('c_exptr',{type:'line',data:{labels:lbl,datasets:[{label:'總支出',data:expC.map(r=>r.total),borderColor:'#f0a830',backgroundColor:'rgba(240,168,48,.07)',fill:true,tension:.35,pointRadius:4}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
   mkChart('c_expst',{type:'bar',data:{labels:lbl,datasets:[
-    {label:'卡費',data:exp.map(r=>r.creditCard),backgroundColor:'rgba(224,90,90,.7)',borderRadius:3},
-    {label:'現金/轉帳',data:exp.map(r=>r.cash),backgroundColor:'rgba(240,168,48,.7)',borderRadius:3},
-    {label:'孝親費',data:exp.map(r=>r.filialPiety),backgroundColor:'rgba(56,190,122,.7)',borderRadius:3},
-    {label:'房租',data:exp.map(r=>r.rent),backgroundColor:'rgba(86,144,245,.7)',borderRadius:3},
-    {label:'美甲美容',data:exp.map(r=>r.beauty),backgroundColor:'rgba(152,128,232,.7)',borderRadius:3},
-    {label:'保險',data:exp.map(r=>r.insurance),backgroundColor:'rgba(42,204,224,.65)',borderRadius:3},
+    {label:'卡費',data:expC.map(r=>r.creditCard),backgroundColor:'rgba(224,90,90,.7)',borderRadius:3},
+    {label:'現金/轉帳',data:expC.map(r=>r.cash),backgroundColor:'rgba(240,168,48,.7)',borderRadius:3},
+    {label:'孝親費',data:expC.map(r=>r.filialPiety),backgroundColor:'rgba(56,190,122,.7)',borderRadius:3},
+    {label:'房租',data:expC.map(r=>r.rent),backgroundColor:'rgba(86,144,245,.7)',borderRadius:3},
+    {label:'美甲美容',data:expC.map(r=>r.beauty),backgroundColor:'rgba(152,128,232,.7)',borderRadius:3},
+    {label:'保險',data:expC.map(r=>r.insurance),backgroundColor:'rgba(42,204,224,.65)',borderRadius:3},
   ]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}}}}});
 }
 
@@ -345,6 +423,7 @@ function renderInvest(){
   const h=D.holdings;
   const tMkt=h.reduce((s,r)=>s+r.market,0),tCost=h.reduce((s,r)=>s+r.totalCost,0),tPnl=h.reduce((s,r)=>s+r.pnl,0);
   $('tab-invest').innerHTML=`
+${periodSelHTML()}
 <div class="kpi-grid">
   <div class="kpi"><div class="kpi-lbl">投資組合市值</div><div class="kpi-val" style="color:var(--purple)">${money(tMkt)}</div><div class="kpi-sub"><span class="neu">總成本 ${money(tCost)}</span></div></div>
   <div class="kpi"><div class="kpi-lbl">未實現損益（含息）</div><div class="kpi-val" style="color:${tPnl>=0?'var(--green)':'var(--red)'}">${money(tPnl)}</div><div class="kpi-sub">${tPnl>=0?`<span class="pos">${pct(tPnl/tCost)}</span>`:`<span class="neg">${pct(tPnl/tCost)}</span>`}</div></div>
@@ -393,8 +472,8 @@ function renderInvest(){
     <tbody>${D.transactions.map(r=>`<tr><td>${r.date}</td><td><span class="badge ${r.type==='買進'?'b-green':'b-amber'}">${r.type}</span></td><td>${r.name}</td><td>${nt(r.shares)}</td><td>$${nt(r.price,2)}</td><td>${money(r.amount)}</td><td>$${nt(r.fee)}</td></tr>`).join('')}</tbody>
   </table></div>
 </div>`;
-  const lbl=etf.map(r=>fmtM(r.month));
-  mkChart('c_etft',{type:'line',data:{labels:lbl,datasets:[{label:'ETF市值',data:etf.map(r=>r.market),borderColor:'#9880e8',backgroundColor:'rgba(152,128,232,.07)',fill:true,tension:.35,pointRadius:4},{label:'投入金額',data:etf.map(r=>r.invested),borderColor:'#5090a0',tension:.35,pointRadius:3,borderDash:[4,3],borderWidth:1.5}]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
+  const etfC=sliceChart(etf);const lbl=etfC.map(r=>fmtMShort(r.month));
+  mkChart('c_etft',{type:'line',data:{labels:lbl,datasets:[{label:'ETF市值',data:etfC.map(r=>r.market),borderColor:'#9880e8',backgroundColor:'rgba(152,128,232,.07)',fill:true,tension:.35,pointRadius:4},{label:'投入金額',data:etfC.map(r=>r.invested),borderColor:'#5090a0',tension:.35,pointRadius:3,borderDash:[4,3],borderWidth:1.5}]},options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
   mkChart('c_hpie',{type:'doughnut',data:{labels:h.map(r=>r.name),datasets:[{data:h.map(r=>r.market),backgroundColor:PAL.map(c=>c+'bb'),borderColor:PAL,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{tooltip:{callbacks:{label:c=>` ${c.label}: ${money(c.raw)} (${pct(c.raw/tMkt)})`}}}}});
   mkChart('c_pnl',{type:'bar',data:{labels:h.map(r=>r.name),datasets:[
     {label:'未實現損益',data:h.map(r=>r.pnl),backgroundColor:h.map(r=>r.pnl>=0?'rgba(56,190,122,.72)':'rgba(224,90,90,.68)'),borderRadius:5,yAxisID:'y'},
@@ -409,13 +488,28 @@ function renderDividend(){
   const divs=D.dividends;
   const totalDiv=divs.reduce((s,r)=>s+r.totalDividend,0);
   const curYr=new Date().getFullYear().toString();
+  const curMon=new Date().getMonth()+1;
   const yrDiv=divs.filter(r=>r.date.startsWith(curYr)).reduce((s,r)=>s+r.totalDividend,0);
+  // 年曆：12個月格子
+  const calHTML=[1,2,3,4,5,6,7,8,9,10,11,12].map(m=>{
+    const stocks=D.dividendSchedule.filter(s=>s.payMonths.includes(m));
+    const hasDiv=stocks.length>0;
+    const isNow=m===curMon;
+    const chips=stocks.map(s=>`<span class="div-cal-chip" title="${s.name}">${s.code}</span>`).join('');
+    return `<div class="div-cal-month${hasDiv?' has-div':''}${isNow?' is-now':''}">
+      <div class="div-cal-lbl">${m}月${isNow?' 📍':''}</div>
+      ${hasDiv?chips:`<span style="font-size:10.5px;color:var(--muted2)">—</span>`}
+    </div>`;
+  }).join('');
   $('tab-dividend').innerHTML=`
+${periodSelHTML()}
 <div class="kpi-grid">
   <div class="kpi"><div class="kpi-lbl">歷史累計股利</div><div class="kpi-val" style="color:var(--amber)">${money(totalDiv)}</div><div class="kpi-sub"><span class="neu">共 ${divs.length} 筆紀錄</span></div></div>
   <div class="kpi"><div class="kpi-lbl">${curYr}年累計</div><div class="kpi-val">${money(yrDiv)}</div><div class="kpi-sub"><span class="neu">今年發放</span></div></div>
 </div>
-<div class="sec-hdr" style="margin-bottom:10px"><div class="sec-title">📅 股利發放時程</div></div>
+<div class="sec-hdr" style="margin-bottom:10px"><div class="sec-title">📅 年度股利日曆</div></div>
+<div class="div-cal">${calHTML}</div>
+<div class="sec-hdr" style="margin-bottom:10px;margin-top:4px"><div class="sec-title">各股發放月份</div></div>
 <div class="pay-sched">
   ${D.dividendSchedule.map(s=>`<div class="pay-card"><div class="pay-code">${s.code}</div><div class="pay-name">${s.name}</div><div class="pay-months">${s.payMonths.length>0?s.payMonths.map(m=>`<span class="pay-mon">${m}月</span>`).join(''):'<span class="pay-none">不定期</span>'}</div><div style="font-size:11px;color:var(--muted2);margin-top:6px">${s.note}</div></div>`).join('')}
 </div>
@@ -432,13 +526,13 @@ function renderDividend(){
   if(divs.length>0){
     const byMonth={};
     divs.forEach(r=>{const m=r.date.slice(0,7);byMonth[m]=(byMonth[m]||0)+r.totalDividend});
-    const keys=Object.keys(byMonth).sort();
+    const keys=Object.keys(byMonth).sort();const keysC=sliceChart(keys);
     const container=document.createElement('div');container.className='chart-row col-1';
     const cc=document.createElement('div');cc.className='chart-card';
     cc.innerHTML=`<div class="chart-title">月度股利收入</div><div class="chart-wrap"><canvas id="c_div"></canvas></div>`;
     container.appendChild(cc);
     $('tab-dividend').insertBefore(container,$('tab-dividend').querySelector('.tbl-card'));
-    mkChart('c_div',{type:'bar',data:{labels:keys.map(fmtM),datasets:[{label:'股利',data:keys.map(k=>byMonth[k]),backgroundColor:'rgba(240,168,48,.72)',borderRadius:5}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
+    mkChart('c_div',{type:'bar',data:{labels:keysC.map(fmtMShort),datasets:[{label:'股利',data:keysC.map(k=>byMonth[k]),backgroundColor:'rgba(240,168,48,.72)',borderRadius:5}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+money(c.raw)}}},scales:{y:{ticks:{callback:v=>'$'+nt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{grid:{display:false}}}}});
   }
 }
 
@@ -499,17 +593,37 @@ function renderGoalRows(curNet){
 }
 
 function renderPGCards(){
-  return D.personalGoals.map(g=>`
-    <div class="pg-card" style="border-color:${g.color||'#5690f5'}44">
+  const done=D.personalGoals.filter(g=>g.actualDate);
+  const inprog=D.personalGoals.filter(g=>!g.actualDate);
+  // 完成的放後面，進行中放前面；各自排序
+  const sorted=[...inprog,...done];
+  return sorted.map(g=>{
+    const isDone=!!g.actualDate;
+    if(isDone){
+      return `<div class="pg-card pg-card-done">
+        <div class="pg-card-done-badge">✅</div>
+        <div class="pg-done-stamp">🎉 已完成</div>
+        <div class="pg-name" style="font-size:16px;margin-bottom:6px">${g.goal}</div>
+        <div style="font-size:12px;color:var(--green);font-weight:600;margin-bottom:4px">完成於 ${g.actualDate}</div>
+        ${g.targetDate?`<div style="font-size:11px;color:var(--muted)">原定：${g.targetDate}</div>`:''}
+        ${g.note?`<div class="pg-note" style="margin-top:6px">${g.note}</div>`:''}
+        <div class="pg-actions">
+          <button class="btn btn-xs btn-ghost" onclick="openPGModal(${g.id})">✏️ 編輯</button>
+          <button class="btn btn-xs btn-danger" onclick="delPG(${g.id})">🗑</button>
+        </div>
+      </div>`;
+    }
+    return `<div class="pg-card" style="border-color:${g.color||'#5690f5'}44">
       <div class="pg-date" style="color:${g.color||'#5690f5'}">${g.targetDate||'（未設定）'}</div>
-      <div class="pg-yrs">${g.actualDate?`<span style="color:var(--green)">✅ 完成於 ${g.actualDate}</span>`:`距今約 ${estimateYears(g.targetDate)}`}</div>
+      <div class="pg-yrs">距今約 ${estimateYears(g.targetDate)}</div>
       <div class="pg-name">${g.goal}</div>
-      ${g.note&&!g.actualDate?`<div class="pg-note">${g.note}</div>`:''}
+      ${g.note?`<div class="pg-note">${g.note}</div>`:''}
       <div class="pg-actions">
         <button class="btn btn-xs btn-ghost" onclick="openPGModal(${g.id})">✏️ 編輯</button>
         <button class="btn btn-xs btn-danger" onclick="delPG(${g.id})">🗑</button>
       </div>
-    </div>`).join('')||`<div style="color:var(--muted2);font-size:13px;padding:16px">尚無個人目標</div>`;
+    </div>`;
+  }).join('')||`<div style="color:var(--muted2);font-size:13px;padding:16px">尚無個人目標</div>`;
 }
 
 function estimateYears(dateStr){
@@ -609,6 +723,16 @@ function openModal(title,sub,body,saveH,saveLbl='儲存'){
 }
 function closeModal(){$('overlay').classList.remove('open');}
 $('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))closeModal()});
+
+// ── 設定抽屜 ──
+function openSettings(){
+  document.getElementById('settingsOverlay').classList.add('open');
+  document.getElementById('settingsDrawer').classList.add('open');
+}
+function closeSettings(){
+  document.getElementById('settingsOverlay').classList.remove('open');
+  document.getElementById('settingsDrawer').classList.remove('open');
+}
 
 // ── 新增 / 更新月份 ──
 function openMonthModal(){
@@ -929,26 +1053,22 @@ function openStatementUpload(){
 `,()=>saveStatementData());
 }
 
-function parseStatementText() {
-  const txt = $('stmtText').value.replace(/,/g, ''); // 移除千分位逗號
-  if (!txt) { alert('請先貼上文字'); return; }
-  let foundCount = 0;
-  D.holdings.forEach((h, i) => {
-    // 尋找股票代號，並抓取代號後面的連續數字
-    const regex = new RegExp(h.code + '[^0-9]*([0-9]+\\.?[0-9]*)[^0-9]*([0-9]+\\.?[0-9]*)[^0-9]*([0-9]+\\.?[0-9]*)', 'i');
-    const match = txt.match(regex);
-    if (match) {
-      const nums = [parseFloat(match[1]), parseFloat(match[2]), parseFloat(match[3])].filter(n => !isNaN(n));
-      if (nums.length > 0) {
-        const maxNum = Math.max(...nums); // 假設券商明細中，最大的數字通常是「總市值」
-        if (maxNum > h.market * 0.3) {
-          $('su_mk_'+i).value = maxNum;
-          foundCount++;
-        }
+function parseStatementText(){
+  const txt=$('stmtText').value.replace(/,/g,'');
+  if(!txt){alert('請先貼上文字');return;}
+  let foundCount=0;
+  D.holdings.forEach((h,i)=>{
+    const regex=new RegExp(h.code+'[^0-9]*([0-9]+\\.?[0-9]*)[^0-9]*([0-9]+\\.?[0-9]*)[^0-9]*([0-9]+\\.?[0-9]*)','i');
+    const match=txt.match(regex);
+    if(match){
+      const nums=[parseFloat(match[1]),parseFloat(match[2]),parseFloat(match[3])].filter(n=>!isNaN(n));
+      if(nums.length>0){
+        const maxNum=Math.max(...nums);
+        if(maxNum>h.market*0.3){$('su_mk_'+i).value=maxNum;foundCount++;}
       }
     }
   });
-  if(foundCount > 0) alert('已嘗試解析 ' + foundCount + ' 筆市值，請確認下方表格是否正確再按儲存！');
+  if(foundCount>0)alert('已嘗試解析 '+foundCount+' 筆市值，請確認下方表格是否正確再按儲存！');
   else alert('無法識別對應數字。各家券商格式差異較大，若抓取失敗請手動填寫下方表格。');
 }
 
@@ -980,7 +1100,9 @@ function exportData(){
   const blob=new Blob([json],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url;a.download=`資產管理_備份_${ts}.json`;
+  a.href=url;
+  const fname='資產管理_備份_'+ts+'.json';
+  a.download=fname;
   document.body.appendChild(a);a.click();
   document.body.removeChild(a);URL.revokeObjectURL(url);
 }
@@ -998,11 +1120,13 @@ function importData(input){
       const keys=['overview','income','expenses','etf','holdings','transactions','goals','personalGoals','dividends','dividendSchedule'];
       const missing=keys.filter(k=>parsed[k]===undefined);
       if(missing.length>0){
-        const ok=confirm(`⚠️ 此備份缺少部分欄位：${missing.join(', ')}\n\n仍要繼續匯入嗎？（缺少的部分將保留目前資料）`);
+        const ok=confirm('⚠️ 此備份缺少部分欄位：'+missing.join(', ')+'\n\n仍要繼續匯入嗎？（缺少的部分將保留目前資料）');
         if(!ok){input.value='';return;}
-        missing.forEach(k=>{ parsed[k]=D[k]; });
+        missing.forEach(k=>{parsed[k]=D[k];});
       }
-      const ok=confirm(`確定要匯入此備份？\n\n📅 資料期間：${parsed.overview[0]?.month||'?'} ～ ${parsed.overview[parsed.overview.length-1]?.month||'?'}\n📊 月份筆數：${parsed.overview.length} 筆\n💼 持倉：${parsed.holdings?.length||0} 檔\n🎯 目標：${parsed.goals?.length||0} 個\n\n⚠️ 目前的資料將被取代！`);
+      const p0=parsed.overview[0]?.month||'?';
+      const pN=parsed.overview[parsed.overview.length-1]?.month||'?';
+      const ok=confirm('確定要匯入此備份？\n\n📅 資料期間：'+p0+' ～ '+pN+'\n📊 月份筆數：'+parsed.overview.length+' 筆\n💼 持倉：'+(parsed.holdings?.length||0)+' 檔\n🎯 目標：'+(parsed.goals?.length||0)+' 個\n\n⚠️ 目前的資料將被取代！');
       if(!ok){input.value='';return;}
       if(parsed.personalGoals)parsed.personalGoals.forEach(g=>{if(g.actualDate===undefined)g.actualDate='';});
       D=parsed;
@@ -1012,7 +1136,10 @@ function importData(input){
       document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
       document.querySelector('[data-tab="overview"]').classList.add('active');
       $('tab-overview').classList.add('active');
+      const _content=document.querySelector('.content');
+      if(_content)_content.dataset.theme='overview';
       renderOverview();
+      checkReminders();
       alert('✅ 匯入成功！資料已載入。');
     }catch(err){
       alert('❌ 讀取失敗：檔案可能已損毀或格式不正確。\n\n錯誤：'+err.message);
@@ -1024,10 +1151,44 @@ function importData(input){
 }
 
 // ═══════════════════════════════════════════
+// 提醒檢查
+// ═══════════════════════════════════════════
+function checkReminders(){
+  if(!D.overview||D.overview.length===0)return;
+  const now=new Date();
+  const curYM=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const prevDate=new Date(now.getFullYear(),now.getMonth()-1,1);
+  const prevYM=prevDate.getFullYear()+'-'+String(prevDate.getMonth()+1).padStart(2,'0');
+  const items=[];
+  if(!D.overview.find(r=>r.month===curYM))
+    items.push('📝 本月（'+curYM+'）資產資料尚未填寫');
+  if(!D.overview.find(r=>r.month===prevYM))
+    items.push('📝 上月（'+prevYM+'）資產資料尚未填寫');
+  const curMon=now.getMonth()+1;
+  const divStocks=(D.dividendSchedule||[]).filter(s=>s.payMonths&&s.payMonths.includes(curMon));
+  if(divStocks.length>0){
+    const divMissing=divStocks.filter(s=>!(D.dividends||[]).find(d=>d.code===s.code&&d.date.startsWith(curYM)));
+    if(divMissing.length>0)
+      items.push('🌸 本月預計有股利未記錄：'+divMissing.map(s=>s.code).join('、'));
+  }
+  if(items.length===0)return;
+  const banner=document.createElement('div');
+  banner.className='reminder-banner';
+  banner.id='reminderBanner';
+  banner.innerHTML='<button class="reminder-close" onclick="this.parentElement.remove()">✕</button>'
+    +'<div class="reminder-title">⏰ 待填寫提醒</div>'
+    +items.map(it=>'<div class="reminder-item">· '+it+'</div>').join('');
+  const _content=document.querySelector('.content');
+  if(_content&&!document.getElementById('reminderBanner'))
+    _content.insertBefore(banner,_content.firstChild);
+}
+
+// ═══════════════════════════════════════════
 // TAB SWITCH
 // ═══════════════════════════════════════════
 const REND={overview:renderOverview,income:renderIncome,expenses:renderExpenses,invest:renderInvest,dividend:renderDividend,goals:renderGoals,annual:renderAnnual};
 let _activeTab='overview';
+const _content=document.querySelector('.content');
 document.querySelectorAll('.tab').forEach(el=>{
   el.addEventListener('click',()=>{
     if(D.overview.length===0){showWelcome();return;}
@@ -1036,6 +1197,7 @@ document.querySelectorAll('.tab').forEach(el=>{
     el.classList.add('active');
     _activeTab=el.dataset.tab;
     $('tab-'+_activeTab).classList.add('active');
+    if(_content)_content.dataset.theme=_activeTab;
     REND[_activeTab]();
   });
 });
@@ -1044,7 +1206,9 @@ document.querySelectorAll('.tab').forEach(el=>{
 // INIT
 // ═══════════════════════════════════════════
 $('hdrDate').textContent=new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric'});
+if(_content)_content.dataset.theme='overview';
 renderOverview();
+checkReminders();
 </script>
 </body>
 </html>
