@@ -200,13 +200,13 @@ tr:hover td{background:rgba(255,255,255,.025)}
 </div>
 
 <div class="tabs">
-  <div class="tab active" data-tab="overview">總覽</div>
-  <div class="tab" data-tab="income">收入儲蓄</div>
-  <div class="tab" data-tab="expenses">支出分析</div>
-  <div class="tab" data-tab="invest">投資組合</div>
-  <div class="tab" data-tab="dividend">股利追蹤</div>
-  <div class="tab" data-tab="goals">目標追蹤</div>
-  <div class="tab" data-tab="annual">年度總結</div>
+  <div class="tab active" data-tab="overview">≡ 總覽</div>
+  <div class="tab" data-tab="income">↑ 收入儲蓄</div>
+  <div class="tab" data-tab="expenses">↓ 支出分析</div>
+  <div class="tab" data-tab="invest">◈ 投資組合</div>
+  <div class="tab" data-tab="dividend">◇ 股利追蹤</div>
+  <div class="tab" data-tab="goals">◎ 目標追蹤</div>
+  <div class="tab" data-tab="annual">▦ 年度總結</div>
 </div>
 
 <div class="content">
@@ -320,9 +320,9 @@ function periodCompactHTML(){
     +'<button class="period-btn'+(p===6&&!ic?' active':'')+' " onclick="setPeriod(6,this)">6M</button>'
     +'<button class="period-btn'+(p===12&&!ic?' active':'')+' " onclick="setPeriod(12,this)">12M</button>'
     +'<button class="period-btn'+(p>=999&&!ic?' active':'')+' " onclick="setPeriod(999,this)">全部</button>'
-    +'<input type="text" inputmode="numeric" class="period-input" value="'+(chartFrom||'')+'" placeholder="YYYY-MM" onchange="setCustomPeriod()">'
+    +'<input type="month" class="period-input" value="'+(chartFrom||'')+'" onchange="setCustomPeriod()">'
     +'<span class="period-sep">～</span>'
-    +'<input type="text" inputmode="numeric" class="period-input" value="'+(chartTo||'')+'" placeholder="YYYY-MM" onchange="setCustomPeriod()">'
+    +'<input type="month" class="period-input" value="'+(chartTo||'')+'" onchange="setCustomPeriod()">'
     +(ic?'<button class="period-clear" onclick="setPeriod('+p+',null)">✕ 清除</button>':'')
     +'</div>';
 }
@@ -947,8 +947,8 @@ function openGoalModal(id){
   <div class="fg"><label>目標金額（元）*</label><input type="number" id="gTarget" value="${g?.target||''}"></div>
 </div>
 <div class="form-grid form-grid-2" style="margin-top:10px">
-  <div class="fg"><label>截止月份</label><input type="text" inputmode="numeric" id="gDeadline" value="${g?.deadline||''}" placeholder="YYYY-MM"></div>
-  <div class="fg"><label>達成月份</label><input type="text" inputmode="numeric" id="gAchieved" value="${g?.achievedMonth||''}" placeholder="YYYY-MM"></div>
+  <div class="fg"><label>截止月份</label><div style="display:flex;gap:6px;align-items:center"><input type="month" id="gDeadline" value="${g?.deadline||''}"><button type="button" onclick="$('gDeadline').value=''" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;padding:3px 8px;font-size:12px">清除</button></div></div>
+  <div class="fg"><label>達成月份</label><div style="display:flex;gap:6px;align-items:center"><input type="month" id="gAchieved" value="${g?.achievedMonth||''}"><button type="button" onclick="$('gAchieved').value=''" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;padding:3px 8px;font-size:12px">清除</button></div></div>
 </div>`,()=>{
     const target=parseFloat($('gTarget')?.value);
     if(!target||isNaN(target)){alert('請填寫目標金額');return}
@@ -969,7 +969,7 @@ function openPGModal(id){
 </div>
 <div class="form-grid form-grid-2" style="margin-top:10px">
   <div class="fg"><label>預計完成時間</label><input type="text" id="pgDate" value="${g?.targetDate||''}" placeholder="ex. 2028年春天"></div>
-  <div class="fg"><label>實際完成日期</label><input type="text" inputmode="numeric" id="pgActual" value="${g?.actualDate||''}" placeholder="YYYY-MM-DD"></div>
+  <div class="fg"><label>實際完成日期</label><div style="display:flex;gap:6px;align-items:center"><input type="date" id="pgActual" value="${g?.actualDate||''}"><button type="button" onclick="$('pgActual').value=''" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;padding:3px 8px;font-size:12px">清除</button></div></div>
 </div>
 <div class="form-grid" style="margin-top:10px">
   <div class="fg"><label>備註</label><input type="text" id="pgNote" value="${g?.note||''}" placeholder="任何說明"></div>
