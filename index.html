@@ -26,9 +26,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-sm{padding:5px 10px;font-size:12px}
 .btn-xs{padding:3px 8px;font-size:11px;border-radius:6px}
 .btn-icon{background:transparent;border:none;cursor:pointer;padding:4px 6px;border-radius:6px;color:var(--muted);font-size:14px;transition:all .15s}.btn-icon:hover{background:var(--card3);color:var(--text)}
-.tabs{background:var(--card);border-bottom:1px solid var(--border);padding:0 20px;display:flex;position:sticky;top:56px;z-index:99;overflow-x:auto;gap:2px}
-.tab{padding:11px 16px;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);font-size:13px;font-weight:500;transition:all .18s;white-space:nowrap}
-.tab:hover{color:var(--text)}.tab.active{color:var(--blue2);border-bottom-color:var(--blue)}
+.tabs{background:var(--card);border-bottom:1px solid var(--border);padding:4px 10px;display:flex;position:sticky;top:56px;z-index:99;overflow-x:auto;gap:2px;align-items:center}
+.tab{padding:7px 14px;cursor:pointer;border-bottom:none;border-radius:18px;color:var(--muted);font-size:13px;font-weight:500;transition:all .18s;white-space:nowrap}
+.tab:hover{color:var(--text);background:rgba(86,144,245,.12)}.tab.active{color:#fff;background:var(--blue);font-weight:600}
 .content{padding:22px;max-width:1300px;margin:0 auto}
 .tab-pane{display:none}.tab-pane.active{display:block}
 .sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
@@ -114,7 +114,7 @@ tr:hover td{background:rgba(255,255,255,.025)}
 .autofill-note{font-size:11px;color:var(--teal);background:rgba(42,204,224,.08);border-radius:6px;padding:5px 10px;margin-bottom:8px}
 .modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
 @media(max-width:900px){.col-21,.col-12,.col-3,.col-2{grid-template-columns:1fr}.pg-grid{grid-template-columns:1fr 1fr}.calc-row{grid-template-columns:1fr}}
-@media(max-width:580px){.kpi-grid{grid-template-columns:1fr 1fr}.content{padding:12px}.hdr{padding:0 12px}.pg-grid{grid-template-columns:1fr}.kpi-val{font-size:17px}.chart-card{overflow-x:auto;-webkit-overflow-scrolling:touch}.chart-wrap{min-width:480px}.form-grid-2,.form-grid-3{grid-template-columns:1fr}.period-sel{gap:4px}.period-input{width:80px;font-size:10px}}
+@media(max-width:580px){.kpi-grid{grid-template-columns:1fr 1fr}.content{padding:12px}.hdr{padding:0 12px}.pg-grid{grid-template-columns:1fr}.kpi-val{font-size:17px}.chart-card{overflow-x:auto;-webkit-overflow-scrolling:touch}.chart-wrap{min-width:480px}.form-grid-2,.form-grid-3{grid-template-columns:1fr}.period-sel{gap:4px}.period-input{width:72px;font-size:10px}}
 
 /* ── 期間篩選器 ── */
 .period-sel{display:flex;align-items:center;gap:6px;margin-bottom:14px;padding:9px 14px;background:var(--card);border:1px solid var(--border);border-radius:10px;flex-wrap:wrap}
@@ -129,7 +129,7 @@ tr:hover td{background:rgba(255,255,255,.025)}
 /* ── 圖表 controls ── */
 .chart-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .chart-card-hdr .chart-title{margin-bottom:0;flex:1}
-.period-compact{display:flex;align-items:center;gap:3px;flex-wrap:wrap;justify-content:flex-end}
+.period-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:10px;padding:0 2px}.period-compact{display:flex;align-items:center;gap:3px;flex-wrap:wrap}.period-clear{background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;font-size:11px;padding:2px 7px;line-height:1.5}.period-clear:hover{color:var(--text);border-color:var(--blue)}
 .period-compact .period-btn{padding:3px 7px;font-size:11px}
 .period-compact .period-input{width:76px;font-size:10px;padding:2px 5px}
 .period-compact .period-sep{font-size:11px;color:var(--muted2);margin:0 1px}
@@ -200,13 +200,13 @@ tr:hover td{background:rgba(255,255,255,.025)}
 </div>
 
 <div class="tabs">
-  <div class="tab active" data-tab="overview">📊 總覽</div>
-  <div class="tab" data-tab="income">💵 收入儲蓄</div>
-  <div class="tab" data-tab="expenses">💳 支出分析</div>
-  <div class="tab" data-tab="invest">📈 投資組合</div>
-  <div class="tab" data-tab="dividend">🌸 股利追蹤</div>
-  <div class="tab" data-tab="goals">🎯 目標追蹤</div>
-  <div class="tab" data-tab="annual">📅 年度總結</div>
+  <div class="tab active" data-tab="overview">總覽</div>
+  <div class="tab" data-tab="income">收入儲蓄</div>
+  <div class="tab" data-tab="expenses">支出分析</div>
+  <div class="tab" data-tab="invest">投資組合</div>
+  <div class="tab" data-tab="dividend">股利追蹤</div>
+  <div class="tab" data-tab="goals">目標追蹤</div>
+  <div class="tab" data-tab="annual">年度總結</div>
 </div>
 
 <div class="content">
@@ -317,32 +317,40 @@ function setCustomPeriod(){
 function periodCompactHTML(){
   const p=chartPeriod,ic=chartFrom||chartTo;
   return '<div class="period-compact">'
-    +'<button class="period-btn'+(p===6&&!ic?' active':'')+'" onclick="setPeriod(6,this)">6M</button>'
-    +'<button class="period-btn'+(p===12&&!ic?' active':'')+'" onclick="setPeriod(12,this)">12M</button>'
-    +'<button class="period-btn'+(p>=999&&!ic?' active':'')+'" onclick="setPeriod(999,this)">全部</button>'
-    +'<input type="month" class="period-input" value="'+(chartFrom||'')+'"\ onchange="setCustomPeriod()">'
+    +'<button class="period-btn'+(p===6&&!ic?' active':'')+' " onclick="setPeriod(6,this)">6M</button>'
+    +'<button class="period-btn'+(p===12&&!ic?' active':'')+' " onclick="setPeriod(12,this)">12M</button>'
+    +'<button class="period-btn'+(p>=999&&!ic?' active':'')+' " onclick="setPeriod(999,this)">全部</button>'
+    +'<input type="text" inputmode="numeric" class="period-input" value="'+(chartFrom||'')+'" placeholder="YYYY-MM" onchange="setCustomPeriod()">'
     +'<span class="period-sep">～</span>'
-    +'<input type="month" class="period-input" value="'+(chartTo||'')+'"\ onchange="setCustomPeriod()">'
+    +'<input type="text" inputmode="numeric" class="period-input" value="'+(chartTo||'')+'" placeholder="YYYY-MM" onchange="setCustomPeriod()">'
+    +(ic?'<button class="period-clear" onclick="setPeriod('+p+',null)">✕ 清除</button>':'')
     +'</div>';
 }
 function postRender(){
   const tabEl=document.querySelector('.tab-pane.active');if(!tabEl)return;
-  // ── Add compact period filter to first chart card ──
+  // ── Standalone period-compact row ABOVE first chart card ──
   const firstCard=tabEl.querySelector('.chart-card');
-  if(firstCard&&!firstCard.querySelector('.period-compact')){
+  if(firstCard){
+    let pr=firstCard.previousElementSibling;
+    if(pr&&pr.classList.contains('period-row')){
+      pr.innerHTML=periodCompactHTML();
+    }else{
+      pr=document.createElement('div');pr.className='period-row';
+      pr.innerHTML=periodCompactHTML();
+      firstCard.parentNode.insertBefore(pr,firstCard);
+    }
+    // Remove old period-compact injected inside chart header
+    const oldPc=firstCard.querySelector('.period-compact');
+    if(oldPc)oldPc.remove();
+    // Ensure chart-card-hdr exists
     const titleEl=firstCard.querySelector('.chart-title');
-    if(titleEl){
+    if(titleEl&&!firstCard.querySelector('.chart-card-hdr')){
       const hdr=document.createElement('div');hdr.className='chart-card-hdr';
       firstCard.insertBefore(hdr,titleEl);
       hdr.appendChild(titleEl);
-      hdr.insertAdjacentHTML('beforeend',periodCompactHTML());
     }
-  }else if(firstCard){
-    // update existing period-compact HTML (after period change)
-    const pc=firstCard.querySelector('.period-compact');
-    if(pc)pc.outerHTML=periodCompactHTML();
   }
-  // ── Add toggle button to every chart card ──
+  // ── Toggle button on every chart card ──
   tabEl.querySelectorAll('.chart-card').forEach(card=>{
     if(card.querySelector('.c-toggle'))return;
     const titleEl=card.querySelector('.chart-title');if(!titleEl)return;
@@ -354,9 +362,13 @@ function postRender(){
       w.classList.toggle('chart-hidden');
       btn.textContent=w.classList.contains('chart-hidden')?'▼':'▲';
     };
-    const hdr=card.querySelector('.chart-card-hdr');
-    if(hdr)hdr.appendChild(btn);
-    else{titleEl.style.cssText+='display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;';titleEl.appendChild(btn);}
+    let hdr=card.querySelector('.chart-card-hdr');
+    if(!hdr){
+      hdr=document.createElement('div');hdr.className='chart-card-hdr';
+      card.insertBefore(hdr,titleEl);
+      hdr.appendChild(titleEl);
+    }
+    hdr.appendChild(btn);
   });
 }
 let _charts={};
@@ -935,8 +947,8 @@ function openGoalModal(id){
   <div class="fg"><label>目標金額（元）*</label><input type="number" id="gTarget" value="${g?.target||''}"></div>
 </div>
 <div class="form-grid form-grid-2" style="margin-top:10px">
-  <div class="fg"><label>截止月份</label><input type="month" id="gDeadline" value="${g?.deadline||''}"></div>
-  <div class="fg"><label>達成月份</label><input type="month" id="gAchieved" value="${g?.achievedMonth||''}"></div>
+  <div class="fg"><label>截止月份</label><input type="text" inputmode="numeric" id="gDeadline" value="${g?.deadline||''}" placeholder="YYYY-MM"></div>
+  <div class="fg"><label>達成月份</label><input type="text" inputmode="numeric" id="gAchieved" value="${g?.achievedMonth||''}" placeholder="YYYY-MM"></div>
 </div>`,()=>{
     const target=parseFloat($('gTarget')?.value);
     if(!target||isNaN(target)){alert('請填寫目標金額');return}
@@ -957,7 +969,7 @@ function openPGModal(id){
 </div>
 <div class="form-grid form-grid-2" style="margin-top:10px">
   <div class="fg"><label>預計完成時間</label><input type="text" id="pgDate" value="${g?.targetDate||''}" placeholder="ex. 2028年春天"></div>
-  <div class="fg"><label>實際完成日期</label><input type="date" id="pgActual" value="${g?.actualDate||''}"></div>
+  <div class="fg"><label>實際完成日期</label><input type="text" inputmode="numeric" id="pgActual" value="${g?.actualDate||''}" placeholder="YYYY-MM-DD"></div>
 </div>
 <div class="form-grid" style="margin-top:10px">
   <div class="fg"><label>備註</label><input type="text" id="pgNote" value="${g?.note||''}" placeholder="任何說明"></div>
